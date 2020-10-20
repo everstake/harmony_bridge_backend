@@ -6,6 +6,7 @@ const { Harmony } = require("@harmony-js/core");
 
 const dbController = require("../services/db_controller");
 const transactionSender = require("../services/transaction_sender");
+const logger = require('./logger');
 
 const config = require("../config/harmony_conf.json");
 const contract = require("../config/harmony_contract.json");
@@ -22,6 +23,7 @@ const contractAddr = config.contractAddress;
 const contractObj = factory.createContract(contract.abi, contractAddr);
 
 async function processEvent(eventData) {
+  logger.info.log("info", "Prepare Harmony data to save and process it");
   let dataToSave = {
     chain_id: eventData.returnData.chainId,
     address_to: eventData.returnData.receiver,
@@ -43,26 +45,32 @@ exports.listenEvents = async function () {
     chainId: ChainID.HmyTestnet,
   });
 
-  const contractO = hmy.contracts.createContract(contract.abi, contractAddr);
-  contractO.events
-    .Transfer()
-    .on("data", async (event) => {
-      let eventData = {
-        transactionHash: event.transactionHash,
-        blockHash: event.blockHash,
-        returnData: {
-          receiver: event.returnValues['0'],
-          sender: event.returnValues['1'],
-          amount: event.returnValues['2'],
-          asset: event.returnValues['3'],
-          transferNonce: event.returnValues['4'],
-          timestamp: event.returnValues['5']
-        }
-
-      };
-      await processEvent(eventData);
-    })
-    .on("error", console.error);
+  try{
+    const contractO = hmy.contracts.createContract(contract.abi, contractAddr);
+    contractO.events
+      .Transfer()
+      .on("data", async (event) => {
+        logger.info.log("info", `Catch Transfer event in Harmony blockchain with such a data: ${event}`);
+        let eventData = {
+          transactionHash: event.transactionHash,
+          blockHash: event.blockHash,
+          returnData: {
+            receiver: event.returnValues['0'],
+            sender: event.returnValues['1'],
+            amount: event.returnValues['2'],
+            asset: event.returnValues['3'],
+            transferNonce: event.returnValues['4'],
+            timestamp: event.returnValues['5']
+          }
+        };
+        await processEvent(eventData);
+      })
+      .on("error", async (error) => {
+        logger.error.log("error", `Error while catch Harmony Transfer events: ${error}`);
+      });
+  } catch(e) {
+    logger.error.log("error", `Error while listening Harmony Transfer events: ${e}`);
+  }
 };
 
 exports.listenTestEvents = function () {

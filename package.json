@@ -18,12 +18,16 @@
     "@harmony-js/network": "^0.1.55",
     "@harmony-js/utils": "^0.1.55",
     "axios": "^0.20.0",
+    "debug": "^4.2.0",
     "keccak256": "^1.0.0",
     "knex": "^0.21.6",
     "objection": "^2.2.3",
     "pg": "^8.4.1",
+    "pino": "^6.7.0",
     "sleep": "^6.3.0",
     "tslib": "^2.0.3",
-    "web3": "^1.3.0"
+    "web3": "^1.3.0",
+    "winston": "^3.3.3",
+    "winston-daily-rotate-file": "^4.5.0"
   }
 }
