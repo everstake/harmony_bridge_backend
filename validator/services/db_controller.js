@@ -8,6 +8,8 @@ const transactionStatusTables = {
   "Polka": "polka_harmony_transaction_status",
 };
 
+const chainInfoTable = 'chain_info';
+
 const TXSTATUSES = ["Requested", "Approved"];
 
 let knex = require("knex")({
@@ -79,4 +81,46 @@ exports.getTransactions = async function (blockchain, status) {
     .where("status.status", "Requested");
 
   return transactions;
+};
+
+/*
+ * Set last processed block for a chain
+ *
+ * @param  {String}  blockchain
+ * @param  {Integer}  lastProcessed
+ * 
+ * @return ?
+ */
+exports.setLastProcessed = async function(blockchain, lastProcessed) {
+    let rows = await knex(chainInfoTable)
+        .select('*')
+        .where('chain', blockchain);
+    if (!rows) {
+        return await knex(chainInfoTable)
+            .insert({ chain: blockchain, last_processed: lastProcessed });
+    }
+    else {
+        return await knex(chainInfoTable)
+            .where('chain', blockchain)
+            .update({ last_processed: lastProcessed });
+    }
+};
+
+/*
+ * Get last processed block for a chain
+ *
+ * @param  {String}  blockchain
+ * 
+ * @return {Integer}
+ */
+exports.getLastProcessed = async function(blockchain) {
+    let rows = await knex(chainInfoTable)
+        .select('*')
+        .where('chain', blockchain);
+    if (!rows) {
+        return 0;
+    }
+    else {
+        return rows[0].last_processed;
+    }
 };
