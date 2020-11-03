@@ -1,6 +1,8 @@
 // const harmonyListener = require("./subscribers/harmony_listener");
 const PolkaEventListener = require("./subscribers/polka_listener").PolkaEventListener;
+const transactionSender = require("./services/transaction_sender");
 const dbController = require("./services/db_controller");
+let chainNames = require("./config/chain_names.json");
 // const utils = require("./utils/contract_utils");
 // const dbUtils = require("./utils/db_utils");
 // const hashUtils = require("./utils/hashing");
@@ -19,7 +21,7 @@ console.log("Validator is running");
 logger.info.log('info', "Start listening events");
 
 const polkaListener = new PolkaEventListener(async (data) => {
-    logger.info.log("info", "Prepare Edgeware data to save and process it");
+    logger.info.info("Prepare Edgeware data to save and process it");
     console.log(data);
     let dataToSave = {
         address_to: data.receiver,
@@ -29,8 +31,8 @@ const polkaListener = new PolkaEventListener(async (data) => {
         asset: data.asset,
         uniq_id: data.transferNonce
     };
-    let txId = await dbController.saveTx("Polka", dataToSave);
-    //await transactionSender.processEvent("Polka", "Harmony", data, txId);
+    let txId = await dbController.saveTx(chainNames.polka, dataToSave);
+    await transactionSender.processEvent(chainNames.polka, chainNames.harmony, data, txId);
 });
 polkaListener.listenEvents();
 // harmonyListener.listenEvents();

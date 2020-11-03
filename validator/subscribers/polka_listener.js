@@ -1,5 +1,7 @@
 const { ApiPromise, WsProvider } = require('@polkadot/api');
+const { Struct, Text, u32, u64, u128, GenericAccountId } = require('@polkadot/types');
 
+const logger = require('../logger');
 const dbController = require("../services/db_controller");
 const config = require("../config/polka_conf.json");
 
@@ -41,6 +43,31 @@ class PolkaEventListener {
         this.window = 10;
     }
 
+    async listenEvents() {
+        this.api = await ApiPromise.create({ provider: this.wsProvider });
+
+        this.lastProcessedBlock = await dbController.getLastProcessed('polka');
+        logger.info.info("Start listening Polka events from " + this.lastProcessedBlock);
+
+        var exit = false;
+        while (!exit) {
+            const blockEvents = await this.loadNextEvents();
+            for (let i = 0; i < blockEvents.length; i++) {
+                const [hash, events] = blockEvents[i];
+                for (let j = 0; j < events.length; j++) {
+                    try {
+                        await this.processEvent(events[j]);
+                    }
+                    catch (err) {
+                        logger.info.error(`Error while processing Polka event from block ${hash}: err.message`);
+                    }
+                }
+            }
+            this.lastProcessedBlock = this.pendingLastProcessedBlock;
+            await dbController.setLastProcessed('polka', this.lastProcessedBlock);
+        }
+    }
+
     async loadNextEvents() {
         const lastHdr = await this.api.rpc.chain.getHeader();
         if (lastHdr.number <= this.lastProcessedBlock) {
@@ -61,26 +88,6 @@ class PolkaEventListener {
         return await this.api.query.system.events.range([ fromHash, toHash ]);
     }
 
-    async listenEvents() {
-        this.api = await ApiPromise.create({ provider: this.wsProvider });
-
-        this.lastProcessedBlock = await dbController.getLastProcessed('polka');
-        console.log("Start listening Polka events from " + this.lastProcessedBlock);
-
-        var exit = false;
-        while (!exit) {
-            const blockEvents = await this.loadNextEvents();
-            for (let i = 0; i < blockEvents.length; i++) {
-                const [hash, events] = blockEvents[i];
-                for (let j = 0; j < events.length; j++) {
-                    await this.processEvent(events[j]);
-                }
-            }
-            this.lastProcessedBlock = this.pendingLastProcessedBlock;
-            await dbController.setLastProcessed('polka', this.lastProcessedBlock);
-        }
-    }
-
     async processEvent(eventRecord) {
         const { event, phase } = eventRecord;
         const types = event.typeDef;
@@ -94,7 +101,7 @@ class PolkaEventListener {
             const bytes = event.data[1];
             const eventData = this.decodeEvent(bytes);
             if (eventData) {
-                this.handler(eventData);
+                await this.handler(eventData);
             }
         }
         else {
