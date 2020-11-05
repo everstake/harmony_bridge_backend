@@ -39,6 +39,10 @@ class Db {
         return requests;
     }
 
+    async getRequestsByStatus(status) {
+        return await this.db(requestTable).select('*').where({ status: status });
+    }
+
     async getSignatures(requestId) {
         let signatures = await this.db(signatureTable)
             .select('*')
@@ -67,6 +71,12 @@ class Db {
         await this.db(requestTable)
             .where({ id: id })
             .update({ status: 'collected' });
+    }
+
+    async setRequestPending(id, txHash) {
+        await this.db(requestTable)
+            .where({ id: id })
+            .update({ status: 'pending', transaction_hash: txHash });
     }
 
     async test() {

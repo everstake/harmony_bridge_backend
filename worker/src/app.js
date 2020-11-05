@@ -14,6 +14,7 @@ function isEqualSwapData(l, r) {
 class Worker {
     constructor(db) {
         this.db = db;
+        this.pollInterval = 5000;
     }
 
     isValidSignature(data, signature, validator) {
@@ -64,6 +65,33 @@ class Worker {
         if (numsigs + 1 >= targetChainConfig.signatureThreshold) {
             await this.db.setRequestCollected(swapRequestId);
         }
+    }
+
+    async processCollected() {
+        const requests = await this.db.getRequestsByStatus('collected');
+        if (requests && requests.length > 0) {
+            console.log(`found ${requests.length} swap requests ready to be sent to contract`);
+        }
+        for (var i = 0; i < requests.length; i++) {
+            const request = requests[i];
+            const signatures = this.db.getSignatures(request.id);
+            // TODO: create, sign and send transaction
+            const txHash = 'todo';
+            console.log(`execute swap request ${request.address_from} -> ${request.address_to}, value: ${request.amount}, txhash: ${txHash}`);
+            await this.db.setRequestPending(request.id, txHash);
+        }
+    }
+
+    startSending() {
+        const handler = () => {
+            this.processCollected()
+                .then(() => { setTimeout(handler, this.pollInterval); })
+                .catch(err => {
+                    console.log(`error while processing collected signatures: ${err.message}`);
+                    setTimeout(handler, this.pollInterval);
+                });
+        };
+        setTimeout(handler, this.pollInterval);
     }
 
     async dump() {

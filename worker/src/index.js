@@ -14,6 +14,7 @@ const db = new Db(global.gConfig.postgres.host,
 
 const worker = new Worker(db);
 worker.dump();
+worker.startSending();
 
 const app = express();
 app.use(cors());
