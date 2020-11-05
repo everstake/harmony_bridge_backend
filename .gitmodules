@@ -1,0 +1,3 @@
+[submodule "nano-ethereum-signer"]
+	path = nano-ethereum-signer
+	url = https://github.com/MaiaVictor/nano-ethereum-signer.git
