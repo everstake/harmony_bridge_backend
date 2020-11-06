@@ -12,8 +12,10 @@ function isEqualSwapData(l, r) {
 
 
 class Worker {
-    constructor(db) {
+    constructor(db, harmony, polka) {
         this.db = db;
+        this.harmonyClient = harmony;
+        this.polkaClient = polka;
         this.pollInterval = 5000;
     }
 
@@ -27,10 +29,12 @@ class Worker {
         data.chain_id = targetChainConfig.chain_id;
         const swapRequests = await this.db.getRequests(data.chain_id, data.nonce);
         var swapRequestId = null;
+        var isCollected = false;
         if (swapRequests && swapRequests.length > 0) {
             if (swapRequests.length === 1 && isEqualSwapData(data, swapRequests[0])) {
                 // common situation, some validator have already submitted it`s signature
                 swapRequestId = swapRequests[0].id;
+                isCollected = swapRequests[0].status !== 'collecting';
             }
             else {
                 // weird situation when previous validators submitted signatures for a different data
@@ -39,6 +43,7 @@ class Worker {
                 });
                 if (matchingRequest) {
                     swapRequestId = matchingRequest.id;
+                    isCollected = matchingRequest.status !== 'collecting';
                 }
             }
         }
@@ -56,15 +61,16 @@ class Worker {
             if (existingSig) {
                 // should not happen
                 console.log(`already have a signature from this validator (${signature.validator}), old: ${existingSig.data}, new: ${signature.data}`);
-                return;
+                return false;
             }
         }
 
         console.log(`insert signature ${signature.data} by ${signature.validator}, swap request id: ${swapRequestId}`);
         await this.db.insertSignature(swapRequestId, signature.validator, signature.data);
-        if (numsigs + 1 >= targetChainConfig.signatureThreshold) {
+        if (!isCollected && numsigs + 1 >= targetChainConfig.signatureThreshold) {
             await this.db.setRequestCollected(swapRequestId);
         }
+        return true;
     }
 
     async processCollected() {
@@ -74,10 +80,25 @@ class Worker {
         }
         for (var i = 0; i < requests.length; i++) {
             const request = requests[i];
-            const signatures = this.db.getSignatures(request.id);
-            // TODO: create, sign and send transaction
-            const txHash = 'todo';
-            console.log(`execute swap request ${request.address_from} -> ${request.address_to}, value: ${request.amount}, txhash: ${txHash}`);
+            var txHash = '';
+            if (request.chain_id === global.gConfig.polka.chain_id) {
+                if (!request.transaction_hash) {
+                    console.log(`transaction hash is missing for request ${request.id}`);
+                }
+                txHash = request.transaction_hash;
+            } else {
+                const signatures = await this.db.getSignatures(request.id);
+                txHash = await this.harmonyClient.sendSignatures({
+                    chainId: request.chain_id,
+                    receiver: request.address_to,
+                    sender: request.address_from,
+                    timestamp: request.tx_time,
+                    amount: request.amount,
+                    asset: request.asset,
+                    transferNonce: request.nonce
+                }, signatures.map(sig => { return sig.data; }));
+                console.log(`execute swap request ${request.address_from} -> ${request.address_to}, value: ${request.amount}, txhash: ${txHash}`);
+            }
             await this.db.setRequestPending(request.id, txHash);
         }
     }

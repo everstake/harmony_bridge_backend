@@ -1,5 +1,4 @@
 const { body, validationResult } = require('express-validator');
-const db = require('../services/db');
 
 function isValidValidator(chainId, validator) {
     const validators = global.gConfig[chainId.toLowerCase()].validators;
@@ -46,11 +45,10 @@ exports.submit = async (req, res) => {
     }
     const worker = req.app.get('worker');
     try {
-        worker.processSwapRequest(data, signature);
-        res.status(200).send();
+        const success = await worker.processSwapRequest(data, signature);
+        res.status(200).json({ success: success });
     }
     catch (err) {
         res.status(500).json({ code: 500, error: err.message });
-        return;
     }
 };
