@@ -1,8 +1,27 @@
 const { body, validationResult } = require('express-validator');
+const ethsig = require("../../nano-ethereum-signer");
+
+const hasher = require("../services/hashing");
 
 function isValidValidator(chainId, validator) {
     const validators = global.gConfig[chainId.toLowerCase()].validators;
     return validators.includes(validator);
+}
+
+function isValidSignature(data, signature, validator) {
+    if (data.chain_id === global.gConfig.harmony.chain_id) {
+        const hash = hasher.hashMessageForHarmony({
+            chainId: data.chain_id,
+            receiver: data.address_to,
+            sender: data.address_from,
+            timestamp: data.tx_time,
+            amount: data.amount,
+            asset: data.asset,
+            transferNonce: data.nonce,
+        });
+        const signer = ethsig.signerAddress(hash, signature);
+        return signer === validator;
+    }
 }
 
 exports.validate = (method) => {
@@ -40,7 +59,13 @@ exports.submit = async (req, res) => {
     const data = req.body.data;
     const signature = req.body.signature;
     if (!isValidValidator(data.chain_id, signature.validator)) {
-        res.status(422).json({ code: 422, error: 'no such validator' });
+        console.log(`validator check failed: chain=${data.chain_id}, validator=${signature.validator}`);
+        res.status(422).json({ code: 422, error: `no such validator '${signature.validator}'` });
+        return;
+    }
+    if (!isValidSignature(data, signature.data, signature.validator)) {
+        console.log(`signature check failed: chain=${data.chain_id}, signature=${signature.data}, validator=${signature.validator}`);
+        res.status(422).json({ code: 422, error: `bad signature '${signature.data}'` });
         return;
     }
     const worker = req.app.get('worker');

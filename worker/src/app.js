@@ -19,11 +19,6 @@ class Worker {
         this.pollInterval = 5000;
     }
 
-    isValidSignature(data, signature, validator) {
-        // TODO: implement
-        return true;
-    }
-
     async processSwapRequest(data, signature) {
         const targetChainConfig = global.gConfig[data.chain_id.toLowerCase()];
         data.chain_id = targetChainConfig.chain_id;
