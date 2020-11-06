@@ -19,15 +19,6 @@ const harmony = new HarmonyClient(global.gConfig.harmony.endpoint,
                                   harmonyCountract.abi,
                                   global.gConfig.harmony.contractAddress,
                                   process.env.HARMONY_KEY);
-harmony.sendSignatures({
-    chainId: 0,
-    receiver: '0x61f49cD62Cb1DcA4EBc5d2AeD4A8bc7518D5eB50',
-    sender: '0x61f49cD62Cb1DcA4EBc5d2AeD4A8bc7518D5eB50',
-    timestamp: 1234567890,
-    amount: 1,
-    asset: '0xF74c13C1bFd82fc3f6a39527b13e7C2643D662e9',
-    transferNonce: 0
-}, [ '0xabac' ]);
 
 const worker = new Worker(db, harmony);
 worker.dump();
