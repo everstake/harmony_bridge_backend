@@ -79,6 +79,12 @@ class Db {
             .update({ status: 'pending', transaction_hash: txHash });
     }
 
+    async setRequestFinalized(id) {
+        await this.db(requestTable)
+            .where({ id: id })
+            .update({ status: 'finalized' });
+    }
+
     async test() {
         return await this.db(requestTable).select('*');
     }

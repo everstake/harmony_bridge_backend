@@ -22,7 +22,7 @@ const harmony = new HarmonyClient(global.gConfig.harmony.endpoint,
 
 const worker = new Worker(db, harmony);
 worker.dump();
-worker.startSending();
+worker.start();
 
 const app = express();
 app.use(cors());

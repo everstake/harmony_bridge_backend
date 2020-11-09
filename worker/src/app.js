@@ -98,16 +98,47 @@ class Worker {
         }
     }
 
-    startSending() {
-        const handler = () => {
+    async processConfirmed() {
+        const requests = await this.db.getRequestsByStatus('pending');
+        if (requests && requests.length > 0) {
+            console.log(`found ${requests.length} swap requests sent to blockchain`);
+        }
+        for (var i = 0; i < requests.length; i++) {
+            const request = requests[i];
+            var confirmed = false;
+            if (request.chain_id === global.gConfig.harmony.chain_id) {
+                confirmed = await this.harmonyClient.isTxConfirmed(request.transaction_hash);
+            }
+            else if (request.chain_id === global.gConfig.polka.chain_id) {
+                // TODO: implement
+            }
+
+            if (confirmed) {
+                await this.db.setRequestFinalized(request.id);
+            }
+        }
+    }
+
+    start() {
+        const handler1 = () => {
             this.processCollected()
-                .then(() => { setTimeout(handler, this.pollInterval); })
+                .then(() => { setTimeout(handler1, this.pollInterval); })
                 .catch(err => {
                     console.log(`error while processing collected signatures: ${err.message}`);
-                    setTimeout(handler, this.pollInterval);
+                    setTimeout(handler1, this.pollInterval);
                 });
         };
-        setTimeout(handler, this.pollInterval);
+        const handler2 = () => {
+            this.processConfirmed()
+                .then(() => { setTimeout(handler2, this.pollInterval); })
+                .catch(err => {
+                    console.log(`error while processing confirmed swap requests: ${err.message}`);
+                    setTimeout(handler2, this.pollInterval);
+                });
+        };
+
+        setTimeout(handler1, this.pollInterval);
+        setTimeout(handler2, this.pollInterval);
     }
 
     async dump() {

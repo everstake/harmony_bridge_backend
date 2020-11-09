@@ -7,7 +7,7 @@
         },
         "harmony": {
             "chain_id": 0,
-            "endpoint": "wss://ws.s0.b.hmny.io",
+            "endpoint": "https://api.s0.b.hmny.io/",
             "contractAddress": "0x3CB363efd9e8C192aa59d134C9597978226C3e1A",
             "signatureThreshold": 2,
             "validators": [ "test-validator1", "test-validator2", "test-validator3" ]

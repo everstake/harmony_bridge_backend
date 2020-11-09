@@ -1,3 +1,4 @@
+const { Harmony } = require('@harmony-js/core');
 const { ContractFactory } = require('@harmony-js/contract');
 const { Wallet } = require('@harmony-js/account');
 const { Messenger, WSProvider, HttpProvider } = require('@harmony-js/network');
@@ -6,12 +7,20 @@ const { ChainID, ChainType, hexToNumber } = require('@harmony-js/utils');
 
 class HarmonyClient {
     constructor(endpoint, isMainnet, abi, contractAddr, workerKey) {
-        const ws = new WSProvider(endpoint);
+        const provider = new HttpProvider(endpoint);
         const wallet = new Wallet(new Messenger(
-            ws,
+            provider,
             ChainType.Harmony,
             isMainnet ? ChainID.HmyMainnet : ChainID.HmyTestnet,
         ));
+        this.hmy = new Harmony(
+            endpoint,
+            {
+                chainType: ChainType.Harmony,
+                chainId: isMainnet ? ChainID.HmyMainnet : ChainID.HmyTestnet,
+            },
+        );
+
         const factory = new ContractFactory(wallet);
         this.contract = factory.createContract(abi, contractAddr);
         this.contract.wallet.addByPrivateKey(workerKey);
@@ -26,6 +35,14 @@ class HarmonyClient {
         const response = await this.contract.methods.requestSwap(data, signatures).send(options2);
         console.log(response.transaction.receipt);
         return response.transaction.id;
+    }
+
+    async isTxConfirmed(hash) {
+        const response = await this.hmy.blockchain.getTransactionByHash({ txnHash: hash });
+        if (!response.result) {
+            return false;
+        }
+        return response.result.status === '0x1' || response.result.status === 1;
     }
 }
 
