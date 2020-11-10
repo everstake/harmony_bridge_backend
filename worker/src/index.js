@@ -4,6 +4,7 @@ const cors = require('cors');
 
 const { Db } = require('./services/db');
 const { HarmonyClient } = require('./services/harmony');
+const { EdgewareClient } = require('./services/edgeware');
 const config = require('./config/config');
 const harmonyCountract = require('./config/harmony_contract.json');
 const router = require('./routes');
@@ -19,8 +20,9 @@ const harmony = new HarmonyClient(global.gConfig.harmony.endpoint,
                                   harmonyCountract.abi,
                                   global.gConfig.harmony.contractAddress,
                                   process.env.HARMONY_KEY);
+const edgeware = new EdgewareClient(global.gConfig.polka.endpoint);
 
-const worker = new Worker(db, harmony);
+const worker = new Worker(db, harmony, edgeware);
 worker.dump();
 worker.start();
 

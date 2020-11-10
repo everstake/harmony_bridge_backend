@@ -12,14 +12,51 @@ function isEqualSwapData(l, r) {
 
 
 class Worker {
-    constructor(db, harmony, polka) {
+    constructor(db, harmony, edgeware) {
         this.db = db;
         this.harmonyClient = harmony;
-        this.polkaClient = polka;
+        this.edgewareClient = edgeware;
         this.pollInterval = 5000;
     }
 
-    async processSwapRequest(data, signature) {
+    async storeHarmonySignature(swapRequestId, validatorPayload) {
+        const signatures = await this.db.getHarmonySignatures(swapRequestId);
+        var numsigs = 0;
+        if (signatures) {
+            numsigs = signatures.length;
+            const existingSig = signatures.find(s => { return s.validator === validatorPayload.validator; });
+            if (existingSig) {
+                // should not happen
+                throw new Error(`already have a signature from ${validatorPayload.validator}, old: ${existingSig.data}, new: ${validatorPayload.data}`);
+            }
+        }
+
+        console.log(`insert signature ${validatorPayload.signature} by ${validatorPayload.validator}, swap request id: ${swapRequestId}`);
+        await this.db.insertHarmonySignature(swapRequestId, validatorPayload.validator, validatorPayload.signature);
+        return numsigs + 1;
+    }
+
+    async storeEdgewareHash(swapRequestId, validatorPayload) {
+        if (!validatorPayload.hash) {
+            throw new Error('block hash is missing from validator payload');
+        }
+        const hashes = await this.db.getEdgewareHashes(swapRequestId);
+        var count = 0;
+        if (hashes) {
+            count = hashes.length;
+            const existing = hashes.find(obj => { return obj.validator === validatorPayload.validator; });
+            if (existing) {
+                // should not happen
+                throw new Error(`already have a hash from ${validatorPayload.validator}, old: ${existing.block_hash}, new: ${validatorPayload.hash}`);
+            }
+        }
+
+        console.log(`insert block hash ${validatorPayload.hash} by ${validatorPayload.validator}, swap request id: ${swapRequestId}`);
+        await this.db.insertEdgewareHash(swapRequestId, validatorPayload.validator, validatorPayload.hash);
+        return count + 1;
+    }
+
+    async processSwapRequest(data, validatorPayload) {
         const targetChainConfig = global.gConfig[data.chain_id.toLowerCase()];
         data.chain_id = targetChainConfig.chain_id;
         const swapRequests = await this.db.getRequests(data.chain_id, data.nonce);
@@ -48,21 +85,19 @@ class Worker {
             swapRequestId = await this.db.insertRequest(data);
         }
 
-        const signatures = await this.db.getSignatures(swapRequestId);
-        var numsigs = 0;
-        if (signatures) {
-            numsigs = signatures.length;
-            const existingSig = signatures.find(s => { return s.validator === signature.validator; });
-            if (existingSig) {
-                // should not happen
-                console.log(`already have a signature from this validator (${signature.validator}), old: ${existingSig.data}, new: ${signature.data}`);
-                return false;
-            }
+        var count = 0;
+        if (data.chain_id === global.gConfig.harmony.chain_id) {
+            count = await this.storeHarmonySignature(swapRequestId, validatorPayload);
+        }
+        else if (data.chain_id === global.gConfig.polka.chain_id) {
+            count = await this.storeEdgewareHash(swapRequestId, validatorPayload);
+        }
+        else {
+            console.log('Unknown chain id');
+            return false;
         }
 
-        console.log(`insert signature ${signature.data} by ${signature.validator}, swap request id: ${swapRequestId}`);
-        await this.db.insertSignature(swapRequestId, signature.validator, signature.data);
-        if (!isCollected && numsigs + 1 >= targetChainConfig.signatureThreshold) {
+        if (!isCollected && count >= targetChainConfig.signatureThreshold) {
             await this.db.setRequestCollected(swapRequestId);
         }
         return true;
@@ -77,10 +112,7 @@ class Worker {
             const request = requests[i];
             var txHash = '';
             if (request.chain_id === global.gConfig.polka.chain_id) {
-                if (!request.transaction_hash) {
-                    console.log(`transaction hash is missing for request ${request.id}`);
-                }
-                txHash = request.transaction_hash;
+                // do nothing
             } else {
                 const signatures = await this.db.getSignatures(request.id);
                 txHash = await this.harmonyClient.sendSignatures({
@@ -98,7 +130,7 @@ class Worker {
         }
     }
 
-    async processConfirmed() {
+    async processPending() {
         const requests = await this.db.getRequestsByStatus('pending');
         if (requests && requests.length > 0) {
             console.log(`found ${requests.length} swap requests sent to blockchain`);
@@ -110,7 +142,17 @@ class Worker {
                 confirmed = await this.harmonyClient.isTxConfirmed(request.transaction_hash);
             }
             else if (request.chain_id === global.gConfig.polka.chain_id) {
-                // TODO: implement
+                // TODO: check if all blocks are finalized
+                const hashes = await this.db.getEdgewareHashes(request.id);
+                var numFinalized = 0;
+                for (var j = 0; j < hashes.length; j++) {
+                    if (await this.edgewareClient.isBlockFinalized(hashes[j].block_hash)) {
+                        numFinalized++;
+                    }
+                }
+                if (numFinalized >= global.gConfig.polka.signatureThreshold) {
+                    confirmed = true;
+                }
             }
 
             if (confirmed) {
@@ -129,7 +171,7 @@ class Worker {
                 });
         };
         const handler2 = () => {
-            this.processConfirmed()
+            this.processPending()
                 .then(() => { setTimeout(handler2, this.pollInterval); })
                 .catch(err => {
                     console.log(`error while processing confirmed swap requests: ${err.message}`);

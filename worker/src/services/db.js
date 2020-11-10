@@ -1,7 +1,8 @@
 const knex = require('knex');
 
 const requestTable = 'request';
-const signatureTable = 'signature';
+const harmonyValidatorPayloadTable = 'harmony_validator_payload';
+const edgewareValidatorPayloadTable = 'edgeware_validator_payload';
 
 class Db {
     constructor(host, user, password, database) {
@@ -22,7 +23,7 @@ class Db {
     }
 
     async getAllSignatures() {
-        return await this.db(signatureTable).select('*');
+        return await this.db(harmonyValidatorPayloadTable).select('*');
     }
 
     async getRequests(chainId, nonce) {
@@ -43,11 +44,18 @@ class Db {
         return await this.db(requestTable).select('*').where({ status: status });
     }
 
-    async getSignatures(requestId) {
-        let signatures = await this.db(signatureTable)
+    async getHarmonySignatures(requestId) {
+        let signatures = await this.db(harmonyValidatorPayloadTable)
             .select('*')
             .where({ request_id: requestId });
         return signatures;
+    }
+
+    async getEdgewareHashes(requestId) {
+        let hashes = await this.db(edgewareValidatorPayloadTable)
+            .select('*')
+            .where({ request_id: requestId });
+        return hashes;
     }
 
     async insertRequest(request) {
@@ -58,11 +66,20 @@ class Db {
         return id[0];
     }
 
-    async insertSignature(requestId, validator, signature) {
-        let id = await this.db(signatureTable).insert({
+    async insertHarmonySignature(requestId, validator, signature) {
+        let id = await this.db(harmonyValidatorPayloadTable).insert({
             request_id: requestId,
             validator: validator,
-            data: signature
+            signature: signature
+        }).returning('id');
+        return id[0];
+    }
+
+    async insertEdgewareHash(requestId, validator, hash) {
+        let id = await this.db(edgewareValidatorPayloadTable).insert({
+            request_id: requestId,
+            validator: validator,
+            block_hash: hash
         }).returning('id');
         return id[0];
     }
@@ -83,10 +100,6 @@ class Db {
         await this.db(requestTable)
             .where({ id: id })
             .update({ status: 'finalized' });
-    }
-
-    async test() {
-        return await this.db(requestTable).select('*');
     }
 }
 

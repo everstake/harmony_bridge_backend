@@ -14,16 +14,23 @@ exports.up = function(knex) {
             table.string('transaction_hash')
             table.enu('status', [ 'collecting', 'collected', 'pending', 'finalized' ]).notNullable()
         })
-        .createTable('signature', table => {
+        .createTable('harmony_validator_payload', table => {
             table.increments('id').primary()
             table.integer('request_id').unsigned().references('id').inTable('request').onDelete('SET NULL').index()
             table.string('validator').index()
-            table.string('data')
+            table.string('signature')
+        })
+        .createTable('edgeware_validator_payload', table => {
+            table.increments('id').primary()
+            table.integer('request_id').unsigned().references('id').inTable('request').onDelete('SET NULL').index()
+            table.string('validator').index()
+            table.string('block_hash')
         });
 };
 
 exports.down = function(knex) {
     return knex.schema
         .dropTableIfExists('request')
-        .dropTableIfExists('signature');
+        .dropTableIfExists('harmony_validator_payload')
+        .dropTableIfExists('edgeware_validator_payload');
 };
