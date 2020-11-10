@@ -117,7 +117,7 @@ exports.getLastProcessed = async function(blockchain) {
     let rows = await knex(chainInfoTable)
         .select('*')
         .where('chain', blockchain);
-    if (!rows) {
+    if (!rows || rows.length === 0) {
         return 0;
     }
     else {
