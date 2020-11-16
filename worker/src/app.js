@@ -27,7 +27,7 @@ class Worker {
             const existingSig = signatures.find(s => { return s.validator === validatorPayload.validator; });
             if (existingSig) {
                 // should not happen
-                throw new Error(`already have a signature from ${validatorPayload.validator}, old: ${existingSig.data}, new: ${validatorPayload.data}`);
+                throw new Error(`already have a signature from ${validatorPayload.validator}, old: ${existingSig.signature}, new: ${validatorPayload.signature}`);
             }
         }
 
@@ -65,11 +65,13 @@ class Worker {
         if (swapRequests && swapRequests.length > 0) {
             if (swapRequests.length === 1 && isEqualSwapData(data, swapRequests[0])) {
                 // common situation, some validator have already submitted it`s signature
+                console.log('common situation, some validator have already submitted it`s signature');
                 swapRequestId = swapRequests[0].id;
                 isCollected = swapRequests[0].status !== 'collecting';
             }
             else {
                 // weird situation when previous validators submitted signatures for a different data
+                console.log('weird situation when previous validators submitted signatures for a different data');
                 const matchingRequest = swapRequests.find(request => {
                     return isEqualSwapData(request, data);
                 });
@@ -80,7 +82,7 @@ class Worker {
             }
         }
         // no swap request with such data -> insert new one
-        if (!swapRequestId) {
+        if (swapRequestId === null) {
             console.log(`insert swap request ${data.address_from} -> ${data.address_to}, value: ${data.amount}`);
             swapRequestId = await this.db.insertRequest(data);
         }
