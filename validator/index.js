@@ -20,7 +20,7 @@ console.log("Validator is running");
 
 logger.info.log('info', "Start listening events");
 
-const polkaListener = new PolkaEventListener(async (data) => {
+const polkaListener = new PolkaEventListener(true, async (data) => {
     logger.info.info("Prepare Edgeware data to save and process it");
     console.log(data);
     let dataToSave = {

@@ -6,7 +6,7 @@ let assets = require("../config/assets.json");
 let chainIds = require("../config/chain_ids.json");
 let workerEndpoints = require("../config/worker_endpoints.json");
 let dbController = require("./db_controller");
-const logger = require("../logger");
+const logger = require("./logger");
 
 exports.processEvent = async function (
   fromBlockchain,
