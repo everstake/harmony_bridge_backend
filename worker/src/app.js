@@ -116,7 +116,7 @@ class Worker {
             if (request.chain_id === global.gConfig.polka.chain_id) {
                 // do nothing
             } else {
-                const signatures = await this.db.getSignatures(request.id);
+                const signatures = await this.db.getHarmonySignatures(request.id);
                 txHash = await this.harmonyClient.sendSignatures({
                     chainId: request.chain_id,
                     receiver: request.address_to,
