@@ -1,5 +1,6 @@
 const { ApiPromise, WsProvider } = require('@polkadot/api');
 const { Struct, Text, u32, u64, u128, GenericAccountId } = require('@polkadot/types');
+const { Mainnet, Beresheet } = require('@edgeware/node-types');
 
 const logger = require('../logger');
 const dbController = require("../services/db_controller");
@@ -34,7 +35,8 @@ function byteArrayToNum(byteArray) {
 
 
 class PolkaEventListener {
-    constructor(handler) {
+    constructor(skipOldBlocks, handler) {
+        this.skipOldBlocks = skipOldBlocks
         this.handler = handler;
         this.transferEventType = 0;
         this.wsProvider = new WsProvider(config.provider);
@@ -44,9 +46,15 @@ class PolkaEventListener {
     }
 
     async listenEvents() {
-        this.api = await ApiPromise.create({ provider: this.wsProvider });
+        this.api = await ApiPromise.create({ provider: this.wsProvider, ...Beresheet });
 
-        this.lastProcessedBlock = await dbController.getLastProcessed('polka');
+        if (this.skipOldBlocks) {
+            const lastHdr = await this.api.rpc.chain.getHeader();
+            this.lastProcessedBlock = lastHdr.number - 1;
+        }
+        else {
+            this.lastProcessedBlock = await dbController.getLastProcessed('polka');
+        }
         logger.info.info("Start listening Polka events from " + this.lastProcessedBlock);
 
         var exit = false;

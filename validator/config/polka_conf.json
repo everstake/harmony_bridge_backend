@@ -1,4 +1,4 @@
 {
-  "provider": "ws://edgeware_develop:9944",
+  "provider": "wss://beresheet1.edgewa.re",
   "contractAddress": "5GVy4KCvf1p4hcyk3rEvBHt3oGCcvFFzZez3NVqthkmoFEQq"
 }
