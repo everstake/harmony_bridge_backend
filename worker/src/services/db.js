@@ -86,19 +86,19 @@ class Db {
 
     async setRequestCollected(id) {
         await this.db(requestTable)
-            .where({ id: id })
+            .where({ id: id, status: 'collecting' })
             .update({ status: 'collected' });
     }
 
     async setRequestPending(id, txHash) {
         await this.db(requestTable)
-            .where({ id: id })
+            .where({ id: id, status: 'collected' })
             .update({ status: 'pending', transaction_hash: txHash });
     }
 
     async setRequestFinalized(id) {
         await this.db(requestTable)
-            .where({ id: id })
+            .where({ id: id, status: 'pending' })
             .update({ status: 'finalized' });
     }
 }
