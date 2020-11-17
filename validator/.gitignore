@@ -2,3 +2,5 @@
 logs
 package-lock.json
 .env
+
+.idea

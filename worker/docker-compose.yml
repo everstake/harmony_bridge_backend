@@ -1,0 +1,23 @@
+version: "3"
+services:
+  bridge-worker-app:
+    build: .
+    depends_on:
+      - bridge-worker-postgres
+    links:
+      - bridge-worker-postgres
+    ports:
+      - "3000:3000"
+    command: npm run dev
+    volumes:
+      - .:/app/
+      - /app/node_modules
+
+  bridge-worker-postgres:
+    image: postgres:13.0
+    ports:
+      - "35432:5432"
+    environment:
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_DB: "${POSTGRES_DB}"
