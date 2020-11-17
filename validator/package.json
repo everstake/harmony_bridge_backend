@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "migrate": "knex migrate:latest",
     "dev": "npm run migrate && node index.js",
-    "devTest": "node index.js"
+    "devTest": "node index.js",
+    "test-sender": "mocha tests/edgware_sender.test.js"
   },
   "author": "BlaizeTech",
   "license": "ISC",
@@ -22,6 +23,7 @@
     "@polkadot/api-contract": "^2.4.1",
     "axios": "^0.20.0",
     "debug": "^4.2.0",
+    "dotenv": "^8.2.0",
     "keccak256": "^1.0.0",
     "knex": "^0.21.6",
     "objection": "^2.2.3",
@@ -32,5 +34,18 @@
     "web3": "^1.3.0",
     "winston": "^3.3.3",
     "winston-daily-rotate-file": "^4.5.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^8.2.1",
+    "blakejs": "^1.1.0",
+    "bn.js": "^5.1.3",
+    "bs58": "^4.0.1",
+    "crypto": "^1.0.1",
+    "ed25519": "0.0.4",
+    "ed25519-supercop": "^2.0.1",
+    "noble-ed25519": "^1.0.2",
+    "node-fetch": "^2.6.1",
+    "sha3": "^2.1.3"
   }
 }
