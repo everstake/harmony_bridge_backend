@@ -149,6 +149,14 @@ class MockedDb {
         return this.edgewareHashes.filter(hash => { return hash.request_id === requestId; });
     }
 
+    async countHarmonySignatures(requestId) {
+        return this.harmonySignatures.filter(sig => { return sig.request_id === requestId; }).length;
+    }
+
+    async countEdgewareHashes(requestId) {
+        return this.edgewareHashes.filter(hash => { return hash.request_id === requestId; }).length;
+    }
+
     async insertRequest(request) {
         let id = this.requests.length;
         this.requests.push({
