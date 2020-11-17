@@ -1,3 +1,6 @@
 [submodule "worker/nano-ethereum-signer"]
 	path = worker/nano-ethereum-signer
+  url = https://github.com/MaiaVictor/nano-ethereum-signer.git
+[submodule "validator/nano-ethereum-signer"]
+	path = validator/nano-ethereum-signer
 	url = https://github.com/MaiaVictor/nano-ethereum-signer.git
