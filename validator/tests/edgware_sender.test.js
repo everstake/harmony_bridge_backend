@@ -72,19 +72,21 @@ describe("Bridge", function () {
         transfer_nonce: 0,
       };
       // don't forget add token in bridge smart contract before
-      await edgewareSender
-        .sendHarmDataToEdgeware(swapMessage, keyring.addFromUri("//Bob"))
-        .then(async (result) => {
-          const hashedMessage = edgewareSender.getHashFromSwapMessage(
-            swapMessage
-          );
-          await sleepAsync(6000);
-          const res = await edgewareSender.checkHarmEventByHash(
-            hashedMessage,
-            keyring.addFromUri("//Bob").address
-          );
-          assert.strictEqual(res.toHuman().Ok.data, "0x0100");
+
+      edgewareSender
+        .sendHarmDataToEdgewareAndGetHashBlock(swapMessage, keyring.addFromUri("//Bob"))
+        .then((hash) => {
+          console.log("hash of block :>> ", hash);
+          assert.isString(hash, 'its not string');
         });
+
+      const hashedMessage = edgewareSender.getHashFromSwapMessage(swapMessage);
+      await sleepAsync(6000);
+      const res = await edgewareSender.checkHarmEventByHash(
+        hashedMessage,
+        keyring.addFromUri("//Bob").address
+      );
+      assert.strictEqual(res.toHuman().Ok.data, "0x0100");
     });
   });
 });
