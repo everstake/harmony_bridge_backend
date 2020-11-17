@@ -58,6 +58,20 @@ class Db {
         return hashes;
     }
 
+    async countHarmonySignatures(requestId) {
+        let total = await this.db(harmonyValidatorPayloadTable)
+            .count('id as CNT')
+            .where({ request_id: requestId });
+        return total[0].CNT;
+    }
+
+    async countEdgewareHashes(requestId) {
+        let total = await this.db(edgewareValidatorPayloadTable)
+            .count('id as CNT')
+            .where({ request_id: requestId });
+        return total[0].CNT;
+    }
+
     async insertRequest(request) {
         let id = await this.db(requestTable).insert({
             status: 'collecting',
@@ -133,6 +147,14 @@ class MockedDb {
 
     async getEdgewareHashes(requestId) {
         return this.edgewareHashes.filter(hash => { return hash.request_id === requestId; });
+    }
+
+    async countHarmonySignatures(requestId) {
+        return this.harmonySignatures.filter(sig => { return sig.request_id === requestId; }).length;
+    }
+
+    async countEdgewareHashes(requestId) {
+        return this.edgewareHashes.filter(hash => { return hash.request_id === requestId; }).length;
     }
 
     async insertRequest(request) {
