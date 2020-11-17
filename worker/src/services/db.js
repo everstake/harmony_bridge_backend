@@ -192,5 +192,6 @@ class MockedDb {
 
 
 module.exports = {
-    Db, MockedDb
+    Db,
+    MockedDb
 }
