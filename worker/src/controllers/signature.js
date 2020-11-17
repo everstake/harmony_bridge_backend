@@ -9,7 +9,10 @@ function isValidValidator(chainId, validator) {
 }
 
 function isValidSignature(data, signature, validator) {
-    if (data.chain_id === global.gConfig.harmony.chain_id) {
+    if (data.chain_id.toLowerCase() === 'harmony') {
+        if (!signature) {
+            return false;
+        }
         const hash = hasher.hashMessageForHarmony({
             chainId: data.chain_id,
             receiver: data.address_to,
