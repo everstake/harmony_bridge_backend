@@ -1,4 +1,4 @@
-// const harmonyListener = require("./subscribers/harmony_listener");
+const harmonyListener = require("./subscribers/harmony_listener");
 const PolkaEventListener = require("./subscribers/polka_listener").PolkaEventListener;
 const transactionSender = require("./services/transaction_sender");
 const dbController = require("./services/db_controller");
@@ -35,7 +35,22 @@ const polkaListener = new PolkaEventListener(true, async (data) => {
     await transactionSender.processEvent(chainNames.polka, chainNames.harmony, data, txId);
 });
 polkaListener.listenEvents();
-// harmonyListener.listenEvents();
+setTimeout(() => {
+    harmonyListener.processEvent({
+        returnData: {
+            chainId: 0,
+            receiver: '5GNJqTPyNqANBkUVMN1LPPrxXnFouWXoe2wNSmmEoLctxiZY',
+            sender: '5GNJqTPyNqANBkUVMN1LPPrxXnFouWXoe2wNSmmEoLctxiZY',
+            timestamp: 2234567890,// (Date.now() / 1000).toFixed(),
+            amount: 1,
+            asset: '',
+            transferNonce: 1
+        },
+        transaction_hash: '0x00',
+        block_hash: '0x01'
+    });
+}, 1000);
+harmonyListener.listenEvents();
 // harmonyListener.listenTestEvents();
 logger.info.log('info', "Start doing more stuff");
 logger.error.log('error', "Start doing more stuff");

@@ -6,7 +6,7 @@ const { Harmony } = require("@harmony-js/core");
 
 const dbController = require("../services/db_controller");
 const transactionSender = require("../services/transaction_sender");
-const logger = require('./logger');
+const logger = require('../logger');
 
 const config = require("../config/harmony_conf.json");
 const contract = require("../config/harmony_contract.json");
@@ -36,7 +36,7 @@ async function processEvent(eventData) {
     block_hash: eventData.blockHash
   }
   let txId = await dbController.saveTx("Harmony", dataToSave);
-  await transactionSender.processEvent("Harmony", "Polka", eventData.returnData, txId);
+  await transactionSender.processSwapToEdgeware(/*"Harmony", "Polka", */eventData.returnData, txId);
 }
 
 exports.listenEvents = async function () {
