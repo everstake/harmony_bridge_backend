@@ -1,4 +1,5 @@
 const axios = require("axios");
+const ethSig = require("../nano-ethereum-signer");
 const util = require("@polkadot/util");
 const { ApiPromise, WsProvider } = require('@polkadot/api');
 const { Keyring } = require('@polkadot/keyring');
@@ -45,28 +46,26 @@ exports.processEvent = async function (
         let sortedData = sortDict(eventData);
         let hashedMessage = hashSwapRequest(sortedData, toBlockchain);
         let signature = signSwapRequest(hashedMessage, toBlockchain);
-        let sendRequestSwap = await sendSwapRequest(
-            sortedData,
-            hashedMessage,
-            signature
+        const signer = ethSig.signerAddress(hashedMessage, signature);
+        await sendToWorker({
+            chain_id: 'harmony',
+            chain_type: sortedData.chainId,
+            address_to: sortedData.receiver,
+            address_from: sortedData.sender,
+            tx_time: sortedData.timestamp,
+            amount: sortedData.amount,
+            asset: sortedData.asset,
+            nonce: sortedData.transferNonce,
+        }, {
+            validator: signer,
+            signature: signature
+        });
+        logger.info.log(
+            "info",
+            `Swap request from ${fromBlockchain} to ${toBlockchain} with ID ${transactionId} was sent to the Worker successfully`
         );
-        if (sendRequestSwap) {
-            logger.info.log(
-                "info",
-                `Swap request from ${fromBlockchain} to ${toBlockchain} with ID ${transactionId} was sent to the Worker successfully`
-            );
-            let changeStatus = await dbController.changeTxStatus(
-                fromBlockchain,
-                transactionId,
-                "Approved"
-            );
-            logger.info.log("info", `Swap request from ${fromBlockchain} to ${toBlockchain} with ID ${transactionId} was save in DB as "Approved"`);
-        } else {
-            logger.error.log(
-                "error",
-                `Error occurse while try to send swap request from ${fromBlockchain} to ${toBlockchain} to the Worker. Transaction with ID ${transactionId} will be send latter with Recovery service.`
-            );
-        }
+        let changeStatus = await dbController.changeTxStatus(fromBlockchain, transactionId, "Approved");
+        logger.info.log("info", `Swap request from ${fromBlockchain} to ${toBlockchain} with ID ${transactionId} was save in DB as "Approved"`);
     } catch (e) {
         logger.error.log(
             "error",
@@ -81,12 +80,14 @@ exports.processSwapToEdgeware = async function (eventData, transactionId) {
     console.log('Imported validator', validatorKeys.address.toString());
 
     eventData.chainId = chainIds[process.env.CHAIN_ID];
-    eventData.asset = assets['Harmony-Polka'][eventData.asset];
+    if (eventData.asset !== '') {
+        eventData.asset = assets['Harmony-Polka'][eventData.asset];
+    }
     if (!edg_sender) {
         throw new Error('sender not initialized');
     }
     try {
-        const blockhash = await edg_sender.sendHarmDataToEdgewareAndGetHashBlock(eventData, validatorKeys);
+        var blockhash = await edg_sender.sendHarmDataToEdgewareAndGetHashBlock(eventData, validatorKeys);
     }
     catch (err) {
         console.log(`failed to send transaction to Edgeware: ${err.message}`);
@@ -116,6 +117,8 @@ exports.processSwapToEdgeware = async function (eventData, transactionId) {
             console.log(`request failed with error: ${err.message}`);
         }
     }
+    let changeStatus = await dbController.changeTxStatus('Harmony', 'Polka', 'Approved');
+    logger.info.log("info", `Swap request from Harmony to Polka was saved in DB as "Approved"`);
 }
 
 function hashSwapRequest(message, toBlockchain) {
@@ -149,28 +152,7 @@ async function sendToWorker(data, validator_payload) {
     }
     else {
         console.log(`request failed: ${JSON.stringify(response.data)}`);
-    }
-}
-
-async function sendSwapRequest(message, hashedMessage, signature) {
-    let response = await axios.post(
-        workerEndpoints.worker1 + "/swapTransaction",
-        {
-            chainId: message.chainId,
-            receiver: message.receiver,
-            sender: message.sender,
-            timestamp: message.timestamp,
-            amount: message.amount,
-            asset: message.asset,
-            transferNonce: message.transferNonce,
-            hashedMessage: hashedMessage,
-            signature: signature,
-        }
-    );
-    if (response.ok) {
-        return true;
-    } else {
-        return false;
+        throw new Error(`request failed: ${JSON.stringify(response.data)}`);
     }
 }
 
