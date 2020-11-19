@@ -39,18 +39,25 @@ async function processEvent(eventData) {
   await transactionSender.processSwapToEdgeware(/*"Harmony", "Polka", */eventData.returnData, txId);
 }
 
-exports.listenEvents = async function () {
+exports.listenEvents = async function (skipOldBlocks) {
   const hmy = new Harmony(config.provider, {
     chainType: ChainType.Harmony,
     chainId: ChainID.HmyTestnet,
   });
 
   try{
+    var options = {/* fromBlock: 2557100 */};
+    if (!skipOldBlocks) {
+      const lastProcessedBlock = await dbController.getLastProcessed('harmony');
+      options = { fromBlock: lastProcessedBlock + 1 };
+    }
+    console.log(`start listening for Harmony events from ${options.fromBlock}`);
     const contractO = hmy.contracts.createContract(contract.abi, contractAddr);
     contractO.events
-      .Transfer()
+      .TokensTransfered(options)
       .on("data", async (event) => {
         logger.info.log("info", `Catch Transfer event in Harmony blockchain with such a data: ${event}`);
+        console.log(`Catch Transfer event in Harmony blockchain with such a data: ${JSON.stringify(event)}`);
         let eventData = {
           transactionHash: event.transactionHash,
           blockHash: event.blockHash,
@@ -63,13 +70,27 @@ exports.listenEvents = async function () {
             timestamp: event.returnValues['5']
           }
         };
+        if (typeof eventData.returnData.amount === 'string') {
+          eventData.returnData.amount = parseInt(eventData.returnData.amount);
+        }
+        if (typeof eventData.returnData.transferNonce === 'string') {
+          eventData.returnData.transferNonce = parseInt(eventData.returnData.transferNonce);
+        }
+        if (typeof eventData.returnData.timestamp === 'string') {
+          eventData.returnData.timestamp = parseInt(eventData.returnData.timestamp);
+        }
         await processEvent(eventData);
+        if (event.blockNumber) {
+          await dbController.setLastProcessed('harmony', event.blockNumber);
+        }
       })
       .on("error", async (error) => {
         logger.error.log("error", `Error while catch Harmony Transfer events: ${error}`);
+        console.log(`Error while catch Harmony Transfer events: ${error}`);
       });
   } catch(e) {
     logger.error.log("error", `Error while listening Harmony Transfer events: ${e}`);
+    console.log(`Error while listening Harmony Transfer events: ${e}`);
   }
 };
 

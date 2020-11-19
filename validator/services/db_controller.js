@@ -35,7 +35,7 @@ exports.saveTx = async function (blockchain, txData) {
     transaction_id: id[0],
     status: "Requested",
   });
-  return id;
+  return id[0];
 };
 
 /*
@@ -53,7 +53,7 @@ exports.changeTxStatus = async function (blockchain, txId, newStatus) {
   }
 
   let dbTxStatusTable = transactionStatusTables[blockchain];
-  let _ = await knew(dbTxStatusTable)
+  let _ = await knex(dbTxStatusTable)
     .where({ transaction_id: txId })
     .update({ status: newStatus });
   return true;
@@ -78,10 +78,27 @@ exports.getTransactions = async function (blockchain, status) {
   let transactions = await knex({ tx: dbTxTable, status: dbTxStatusTable })
     .select("*")
     .whereRaw("?? = ??", ["tx.id", "status.transaction_id"])
-    .where("status.status", "Requested");
+    .where("status.status", status);
 
   return transactions;
 };
+
+exports.getTransactionByStatusAndTime = async function(blockchain, status, startTime) {
+    if (!TXSTATUSES.includes(status)) {
+        throw "New transaction status does not match possible status";
+    }
+
+    let dbTxTable = transactionTables[blockchain];
+    let dbTxStatusTable = transactionStatusTables[blockchain];
+
+    let transactions = await knex({ tx: dbTxTable, status: dbTxStatusTable })
+        .select('*')
+        .whereRaw('?? = ??', ['tx.id', 'status.transaction_id'])
+        .where('status.status', status)
+        .andWhere('tx.tx_time', '>', startTime);
+
+    return transactions;
+}
 
 /*
  * Set last processed block for a chain
@@ -95,7 +112,7 @@ exports.setLastProcessed = async function(blockchain, lastProcessed) {
     let rows = await knex(chainInfoTable)
         .select('*')
         .where('chain', blockchain);
-    if (!rows) {
+    if (!rows || rows.length === 0) {
         return await knex(chainInfoTable)
             .insert({ chain: blockchain, last_processed: lastProcessed });
     }

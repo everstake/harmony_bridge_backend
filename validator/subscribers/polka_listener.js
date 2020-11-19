@@ -133,7 +133,7 @@ class PolkaEventListener {
         // Sender
         var nextId = stringSize + 1;
         var nextSize = 32;
-        const sender = toHexString(encoded.slice(nextId, nextId + nextSize));
+        const sender = GenericAccountId.encode(encoded.slice(nextId, nextId + nextSize));
         //console.log('Sender:', sender);
         // Amount
         nextId = nextId + nextSize;
@@ -143,8 +143,8 @@ class PolkaEventListener {
         // Asset
         nextId = nextId + nextSize;
         nextSize = 32;
-        const asset = toHexString(encoded.slice(nextId, nextId + nextSize));
-        //console.log('Asset:', sender);
+        const asset = GenericAccountId.encode(encoded.slice(nextId, nextId + nextSize));
+        //console.log('Asset:', asset);
         // Transfer nonce
         nextId = nextId + nextSize;
         nextSize = 16;

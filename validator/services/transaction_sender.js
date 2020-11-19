@@ -1,3 +1,4 @@
+require('dotenv').config();
 const axios = require("axios");
 const ethSig = require("../nano-ethereum-signer");
 const util = require("@polkadot/util");
@@ -16,6 +17,8 @@ let polkaAbi = require("../config/polka_abi.json");
 let workerEndpoints = require("../config/worker_endpoints.json");
 let dbController = require("./db_controller");
 const logger = require("../logger");
+
+console.log('CHAIN_ID: ', process.env.CHAIN_ID);
 
 const wsProvider = new WsProvider(polkaConf.provider);
 let edg_sender = null;
@@ -40,13 +43,16 @@ exports.processEvent = async function (
         `Start to prepare data about transfer from ${fromBlockchain} to ${toBlockchain} with ID ${transactionId} for signing and sending to the Worker`
     );
     eventData.chainId = chainIds[process.env.CHAIN_ID];
-    eventData.asset =
-        assets[fromBlockchain + "-" + toBlockchain][eventData.asset];
+    if (eventData.asset !== '0000000000000000000000000000000000000000000000000000000000000000') {
+        eventData.asset = assets[fromBlockchain + "-" + toBlockchain][eventData.asset];
+    }
+    console.log('asset: ', eventData.asset);
     try {
         let sortedData = sortDict(eventData);
         let hashedMessage = hashSwapRequest(sortedData, toBlockchain);
         let signature = signSwapRequest(hashedMessage, toBlockchain);
         const signer = ethSig.signerAddress(hashedMessage, signature);
+        console.log(`Harmony signature: ${signature}, signer: ${signer}`);
         await sendToWorker({
             chain_id: 'harmony',
             chain_type: sortedData.chainId,
@@ -80,14 +86,34 @@ exports.processSwapToEdgeware = async function (eventData, transactionId) {
     console.log('Imported validator', validatorKeys.address.toString());
 
     eventData.chainId = chainIds[process.env.CHAIN_ID];
-    if (eventData.asset !== '') {
+    var isZeroAsset = true;
+    for (var i = 0; i < eventData.asset.length; i++) {
+        const ch = eventData.asset[i];
+        if (ch !== '0' && ch !== 'x') {
+            isZeroAsset = false;
+            break;
+        }
+    }
+    if (!isZeroAsset) {
         eventData.asset = assets['Harmony-Polka'][eventData.asset];
+    }
+    else {
+        eventData.asset = '';
     }
     if (!edg_sender) {
         throw new Error('sender not initialized');
     }
     try {
-        var blockhash = await edg_sender.sendHarmDataToEdgewareAndGetHashBlock(eventData, validatorKeys);
+        console.log(`Sending data: ${JSON.stringify(eventData)} from validator ${validatorKeys.address.toString()}`);
+        var blockhash = await edg_sender.sendHarmDataToEdgewareAndGetHashBlock({
+            receiver: eventData.receiver,
+            sender: eventData.sender,
+            amount: eventData.amount,
+            asset: eventData.asset,
+            transfer_nonce: eventData.transferNonce,
+            timestamp: eventData.timestamp,
+            chain_id: eventData.chainId
+        }, validatorKeys);
     }
     catch (err) {
         console.log(`failed to send transaction to Edgeware: ${err.message}`);
@@ -117,7 +143,7 @@ exports.processSwapToEdgeware = async function (eventData, transactionId) {
             console.log(`request failed with error: ${err.message}`);
         }
     }
-    let changeStatus = await dbController.changeTxStatus('Harmony', 'Polka', 'Approved');
+    let changeStatus = await dbController.changeTxStatus('Harmony', transactionId, 'Approved');
     logger.info.log("info", `Swap request from Harmony to Polka was saved in DB as "Approved"`);
 }
 
