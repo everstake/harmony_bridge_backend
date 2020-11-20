@@ -59,10 +59,17 @@ class Db {
     }
 
     async insertRequest(request) {
-        let id = await this.db(requestTable).insert({
-            status: 'collecting',
-            ...request
-        }).returning('id');
+        let id = await this.db(requestTable)
+            .insert({
+                status: 'collecting',
+                ...request
+            })
+            .returning('id')
+            .onConflict(['chain_id', 'nonce'])
+            .merge({
+                chain_id: request.chain_id,
+                nonce: request.nonce
+            });
         return id[0];
     }
 

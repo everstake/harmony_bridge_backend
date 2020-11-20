@@ -4,10 +4,10 @@ function isEqualSwapData(l, r) {
         l.chain_type === r.chain_type &&
         l.address_to === r.address_to &&
         l.address_from === r.address_from &&
-        l.tx_time === r.tx_time &&
-        l.amount === r.amount &&
+        l.tx_time == r.tx_time &&
+        l.amount == r.amount &&
         l.asset === r.asset &&
-        l.nonce === r.nonce;
+        l.nonce == r.nonce;
 }
 
 
@@ -70,6 +70,7 @@ class Worker {
             }
             else {
                 // weird situation when previous validators submitted signatures for a different data
+                console.log(`requests with the same chain and nonce: ${swapRequests.map(req => req.id)}`);
                 const matchingRequest = swapRequests.find(request => {
                     return isEqualSwapData(request, data);
                 });
@@ -83,6 +84,7 @@ class Worker {
         if (swapRequestId === null) {
             console.log(`insert swap request ${data.address_from} -> ${data.address_to}, value: ${data.amount}`);
             swapRequestId = await this.db.insertRequest(data);
+            console.log(`swap request id=${swapRequestId}`);
         }
 
         var count = 0;
@@ -98,6 +100,7 @@ class Worker {
         }
 
         if (!isCollected && count >= targetChainConfig.signatureThreshold) {
+            console.log(`request ${swapRequestId} reached threshold`);
             await this.db.setRequestCollected(swapRequestId);
         }
         return true;
@@ -111,22 +114,30 @@ class Worker {
         for (var i = 0; i < requests.length; i++) {
             const request = requests[i];
             var txHash = '';
-            if (request.chain_id === global.gConfig.polka.chain_id) {
-                // do nothing
-            } else {
-                const signatures = await this.db.getHarmonySignatures(request.id);
-                txHash = await this.harmonyClient.sendSignatures({
-                    chainId: request.chain_id,
-                    receiver: request.address_to,
-                    sender: request.address_from,
-                    timestamp: request.tx_time,
-                    amount: request.amount,
-                    asset: request.asset,
-                    transferNonce: request.nonce
-                }, signatures.map(sig => { return sig.data; }));
-                console.log(`execute swap request ${request.address_from} -> ${request.address_to}, value: ${request.amount}, txhash: ${txHash}`);
+            try {
+                if (request.chain_id === global.gConfig.polka.chain_id) {
+                    // do nothing
+                } else {
+                    const signatures = await this.db.getHarmonySignatures(request.id);
+                    console.log(`sending ${signatures.length} signatures to contract`);
+                    txHash = await this.harmonyClient.sendSignatures({
+                        chId: request.chain_type,
+                        receiver: request.address_to,
+                        sender: request.address_from,
+                        timestamp: request.tx_time,
+                        amount: request.amount,
+                        asset: request.asset,
+                        transferNonce: request.nonce
+                    }, signatures.map(sig => {
+                        return sig.signature;
+                    }));
+                    console.log(`execute swap request ${request.address_from} -> ${request.address_to}, value: ${request.amount}, txhash: ${txHash}`);
+                }
+                await this.db.setRequestPending(request.id, txHash);
             }
-            await this.db.setRequestPending(request.id, txHash);
+            catch (err) {
+                console.log(`failed to process collected signatures for request ${request.id}: ${err}`);
+            }
         }
     }
 

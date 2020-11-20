@@ -8,12 +8,15 @@ services:
       - postgres
     environment:
       DATABASE_URL: postgres://user:pass@postgres:5432/db
-      CHAIN_ID: testNet
+      CHAIN_ID: mainNet
       NODE_ENV: development
+      EDGEWARE_SEED: 0x30af585760b839be4e7947b3a151d57d9033300d29d148fa481cb586942beba3
     command: npm run dev
     volumes:
       - .:/app/
       - /app/node_modules
+    extra_hosts:
+      - "localhost:192.168.1.206"
 
   postgres:
     image: postgres:13.0

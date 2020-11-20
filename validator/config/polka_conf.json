@@ -1,4 +1,5 @@
 {
-  "provider": "ws://192.168.1.206:9944",
-  "contractAddress": "5E8jM49Fn2imBa2qLGDMVHFoEPyQtnyyW2m7QDv59UgVh3mo"
+  "provider": "wss://beresheet1.edgewa.re",
+  "contractAddress": "5CPTmqnMrgwJc3LqQfzqDeepHy4WwzDNN3X4LW84FiR3XmCF",
+  "swapTimeout": 86400
 }

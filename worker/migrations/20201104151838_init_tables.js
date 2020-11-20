@@ -7,12 +7,13 @@ exports.up = function(knex) {
             table.integer('chain_type')
             table.string('address_to')
             table.string('address_from')
-            table.integer('tx_time')
-            table.integer('amount')
+            table.bigInteger('tx_time')
+            table.bigInteger('amount')
             table.string('asset')
-            table.integer('nonce').index()
+            table.bigInteger('nonce').index()
             table.string('transaction_hash')
             table.enu('status', [ 'collecting', 'collected', 'pending', 'finalized' ]).notNullable()
+            table.unique(['chain_id', 'nonce']);
         })
         .createTable('harmony_validator_payload', table => {
             table.increments('id').primary()

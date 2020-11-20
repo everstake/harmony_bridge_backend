@@ -1,6 +1,10 @@
 {
   "Harmony-Polka": {
-    "test": "5CCqwHbnUhK51CeVAb4rZc8C1PRzVZC4FV5jHWm2FqUr7JUy"
+    "0x181080625b084CDf3c7588ADFb24bc618DAfCE9A": "",
+    "": "5FkMzgDYQUi1VmsTXzeEdFRHxs2gzDk1C9ULYUmvmCvDRf4Q"
   },
-  "Polka-Harmony": {}
+  "Polka-Harmony": {
+    "5FkMzgDYQUi1VmsTXzeEdFRHxs2gzDk1C9ULYUmvmCvDRf4Q": "",
+    "5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM": "0x181080625b084cdf3c7588adfb24bc618dafce9a"
+  }
 }

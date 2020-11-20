@@ -1,7 +1,7 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0xa525abb0e1dd5ea9c53bd491065ed1ddfdd26eb182c08cd883222700d45cf604",
+    "hash": "0x1443fd90343c7b98863ed542df7d3df7ad8d7d32ccd9a366370568a058999610",
     "language": "ink! 3.0.0-rc2",
     "compiler": "rustc 1.49.0-nightly"
   },
@@ -68,6 +68,15 @@
                 "u8"
               ],
               "type": 5
+            }
+          },
+          {
+            "name": "min_amount_to_transfer",
+            "type": {
+              "displayName": [
+                "u128"
+              ],
+              "type": 15
             }
           }
         ],
@@ -636,23 +645,23 @@
         "docs": [],
         "mutates": false,
         "name": [
-          "get_zero_address"
+          "get_chain_id"
         ],
         "payable": false,
         "returnType": {
           "displayName": [
-            "AccountId"
+            "u8"
           ],
-          "type": 9
+          "type": 5
         },
-        "selector": "0xe3a8490c"
+        "selector": "0x0a2381a8"
       },
       {
         "args": [],
         "docs": [],
         "mutates": false,
         "name": [
-          "get_swaps_list"
+          "get_request_swaps"
         ],
         "payable": false,
         "returnType": {
@@ -661,23 +670,59 @@
           ],
           "type": 20
         },
-        "selector": "0x8e0db3af"
+        "selector": "0x5e8f28b6"
       },
       {
-        "args": [],
+        "args": [
+          {
+            "name": "transfer_info",
+            "type": {
+              "displayName": [
+                "SwapMessage"
+              ],
+              "type": 21
+            }
+          }
+        ],
         "docs": [],
-        "mutates": false,
+        "mutates": true,
         "name": [
-          "get_block_timestamp"
+          "request_swap_with_checks"
         ],
         "payable": false,
         "returnType": {
           "displayName": [
-            "u64"
+            "Vec"
           ],
-          "type": 17
+          "type": 4
         },
-        "selector": "0x8414d89c"
+        "selector": "0x7dae9d6c"
+      },
+      {
+        "args": [
+          {
+            "name": "transfer_info",
+            "type": {
+              "displayName": [
+                "SwapMessage"
+              ],
+              "type": 21
+            }
+          }
+        ],
+        "docs": [],
+        "mutates": true,
+        "name": [
+          "request_swap_just_write"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "bool"
+          ],
+          "type": 13
+        },
+        "selector": "0x3b5011b2"
       },
       {
         "args": [
@@ -730,36 +775,6 @@
           "type": 15
         },
         "selector": "0x9ddea79c"
-      },
-      {
-        "args": [
-          {
-            "name": "receiver",
-            "type": {
-              "displayName": [
-                "AccountId"
-              ],
-              "type": 9
-            }
-          },
-          {
-            "name": "amount_to_send",
-            "type": {
-              "displayName": [
-                "u128"
-              ],
-              "type": 15
-            }
-          }
-        ],
-        "docs": [],
-        "mutates": true,
-        "name": [
-          "test_coin_transfer"
-        ],
-        "payable": false,
-        "returnType": null,
-        "selector": "0x3b7b9c38"
       },
       {
         "args": [],
@@ -1508,6 +1523,15 @@
             }
           },
           "name": "chain_id"
+        },
+        {
+          "layout": {
+            "cell": {
+              "key": "0x1600000007000000000000000000000000000000000000000000000000000000",
+              "ty": 15
+            }
+          },
+          "name": "min_amount_to_transfer"
         }
       ]
     }

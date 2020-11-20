@@ -52,7 +52,7 @@ exports.processEvent = async function (
         let hashedMessage = hashSwapRequest(sortedData, toBlockchain);
         let signature = signSwapRequest(hashedMessage, toBlockchain);
         const signer = ethSig.signerAddress(hashedMessage, signature);
-        console.log(`Harmony signature: ${signature}, signer: ${signer}`);
+        console.log(`Harmony hash: ${hashedMessage}, signature: ${signature}, signer: ${signer}`);
         await sendToWorker({
             chain_id: 'harmony',
             chain_type: sortedData.chainId,
@@ -82,7 +82,7 @@ exports.processEvent = async function (
 
 exports.processSwapToEdgeware = async function (eventData, transactionId) {
     const keyring = new Keyring({ type: "sr25519" });
-    const validatorKeys = keyring.addFromSeed(util.hexToU8a(keys.polka_key));
+    const validatorKeys = keyring.addFromSeed(util.hexToU8a(process.env.EDGEWARE_SEED));
     console.log('Imported validator', validatorKeys.address.toString());
 
     eventData.chainId = chainIds[process.env.CHAIN_ID];
@@ -94,12 +94,11 @@ exports.processSwapToEdgeware = async function (eventData, transactionId) {
             break;
         }
     }
-    if (!isZeroAsset) {
-        eventData.asset = assets['Harmony-Polka'][eventData.asset];
-    }
-    else {
+    if (isZeroAsset) {
         eventData.asset = '';
     }
+    eventData.asset = assets['Harmony-Polka'][eventData.asset];
+
     if (!edg_sender) {
         throw new Error('sender not initialized');
     }

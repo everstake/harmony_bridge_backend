@@ -9,9 +9,10 @@ function isValidValidator(chainId, validator) {
 }
 
 function isValidSignature(data, signature, validator) {
-    if (data.chain_id === global.gConfig.harmony.chain_id) {
+    if (data.chain_id === 'harmony') {
+        console.log('check signature for Harmony');
         const hash = hasher.hashMessageForHarmony({
-            chainId: data.chain_id,
+            chainId: data.chain_type,
             receiver: data.address_to,
             sender: data.address_from,
             timestamp: data.tx_time,
@@ -19,7 +20,12 @@ function isValidSignature(data, signature, validator) {
             asset: data.asset,
             transferNonce: data.nonce,
         });
+        console.log('hash: ', hash);
+        console.log('data: ', data);
         const signer = ethsig.signerAddress(hash, signature);
+        if (signer !== validator) {
+            console.log(`validator mismatch: expected=${validator}, actual=${signer}`);
+        }
         return signer === validator;
     }
     return true;
@@ -39,7 +45,7 @@ exports.validate = (method) => {
                 body('data.address_from').exists().not().isEmpty(),
                 body('data.tx_time').exists(),
                 body('data.amount').exists().not().isEmpty(),
-                body('data.asset').exists().not().isEmpty(),
+                body('data.asset').exists(),
                 body('data.nonce').exists().not().isEmpty(),
                 body('validator_payload').exists(),
                 body('validator_payload.validator').exists().not().isEmpty()
@@ -50,6 +56,7 @@ exports.validate = (method) => {
 
 
 exports.submit = async (req, res) => {
+    console.log(req.body.data);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         res.status(422).json({ code: 422, error: errors.array({ onlyFirstError: true })[0] });
@@ -58,6 +65,10 @@ exports.submit = async (req, res) => {
 
     const data = req.body.data;
     const validatorPayload = req.body.validator_payload;
+    if (data.chain_id.toLowerCase() === 'harmony' && data.asset === '') {
+        console.log('empty asset encountered, setting to zero address');
+        data.asset = '0x0000000000000000000000000000000000000000';
+    }
     if (!isValidValidator(data.chain_id, validatorPayload.validator)) {
         console.log(`validator check failed: chain=${data.chain_id}, validator=${validatorPayload.validator}`);
         res.status(422).json({ code: 422, error: `no such validator '${validatorPayload.validator}'` });
@@ -74,6 +85,7 @@ exports.submit = async (req, res) => {
         res.status(200).json({ success: success });
     }
     catch (err) {
+        console.log(`error occurred: ${err.message}`);
         res.status(500).json({ code: 500, error: err.message });
     }
 };

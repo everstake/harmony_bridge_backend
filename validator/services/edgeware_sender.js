@@ -20,6 +20,7 @@ class EdgewareSender {
    * @returns hash of success tx or error trace
    */
   sendHarmDataToEdgewareAndGetHashBlock(swapHarmMessage, validator) {
+    swapHarmMessage.amount = BigInt(swapHarmMessage.amount);
     return new Promise(async (resolve, reject) => {
       const tx = await this.bridgeContract.tx.requestSwap(
         0,
