@@ -7,8 +7,15 @@
     "start": "npm run migrate && node src/index.js",
     "dev": "NODE_ENV=dev npm run migrate && node src/index.js",
     "prod": "NODE_ENV=prod npm run migrate && node src/index.js",
+    "create-env": "cp .env-template .env",
     "migrate": "knex migrate:latest",
-    "test": "mocha src/test/worker.test.js"
+    "test": "mocha src/test/worker.test.js",
+    "sol-cover": "npx truffle run coverage",
+    "prepare-contracts-for-remix": "npx truffle-flattener ./contracts/HarmonyBridge.sol > ./build/HarmonyBridge.sol && npx truffle-flattener ./contracts/EdgewareToken.sol > ./build/EdgewareToken.sol",
+    "compile-contracts": "rm -rf ./build && npx truffle compile",
+    "migrate-in-harmony-testnet": "npx truffle migrate --network testnet --reset && truffle networks",
+    "tests-in-harmony": "npx truffle test",
+    "gan-cli": "npx ganache-cli -m 'puzzle crazy electric wide verify popular struggle latin genuine lawsuit thrive neck'"
   },
   "author": "",
   "license": "ISC",
@@ -29,6 +36,13 @@
     "web3": "^1.3.0"
   },
   "devDependencies": {
-    "mocha": "^8.2.1"
+    "@openzeppelin/contracts": "3.2.0",
+    "eth-gas-reporter": "^0.2.19",
+    "mocha": "^8.2.1",
+    "nano-ethereum-signer": "^0.1.2",
+    "openzeppelin-solidity": "^3.2.0",
+    "truffle": "^5.1.52",
+    "truffle-flattener": "^1.5.0",
+    "web3-eth-accounts": "^1.3.0"
   }
 }
