@@ -57,8 +57,8 @@ class Worker {
     }
 
     async processSwapRequest(data, validatorPayload) {
-        const targetChainConfig = global.gConfig[data.chain_id.toLowerCase()];
-        data.chain_id = targetChainConfig.chain_id;
+        const targetChainConfig = Object.values(global.gConfig).find(item => item.chain_id === data.chain_id);
+        // data.chain_id = targetChainConfig.chain_id;
         const swapRequests = await this.db.getRequests(data.chain_id, data.nonce);
         var swapRequestId = null;
         var isCollected = false;
@@ -123,7 +123,7 @@ class Worker {
                     amount: request.amount,
                     asset: request.asset,
                     transferNonce: request.nonce
-                }, signatures.map(sig => { return sig.data; }));
+                }, signatures.map(sig => { return sig.signature; }));
                 console.log(`execute swap request ${request.address_from} -> ${request.address_to}, value: ${request.amount}, txhash: ${txHash}`);
             }
             await this.db.setRequestPending(request.id, txHash);
