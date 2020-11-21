@@ -8,10 +8,8 @@ services:
       - postgres
     environment:
       DATABASE_URL: postgres://user:pass@postgres:5432/db
-      CHAIN_ID: mainNet
       NODE_ENV: development
-      EDGEWARE_SEED: 0x30af585760b839be4e7947b3a151d57d9033300d29d148fa481cb586942beba3
-    command: npm run dev
+    command: npm run dev ${NODE_ARG}
     volumes:
       - .:/app/
       - /app/node_modules

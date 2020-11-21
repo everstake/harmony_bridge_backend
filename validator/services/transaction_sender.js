@@ -9,7 +9,6 @@ const { ContractPromise } = require('@polkadot/api-contract');
 const EdgewareSender = require('./edgeware_sender');
 const hasher = require("../utils/hashing");
 const signer = require("./signer");
-let keys = require("../config/keys.json");
 let assets = require("../config/assets.json");
 let chainIds = require("../config/chain_ids.json");
 let polkaConf = require("../config/polka_conf.json");
@@ -18,7 +17,6 @@ let workerEndpoints = require("../config/worker_endpoints.json");
 let dbController = require("./db_controller");
 const logger = require("../logger");
 
-console.log('CHAIN_ID: ', process.env.CHAIN_ID);
 
 const wsProvider = new WsProvider(polkaConf.provider);
 let edg_sender = null;
@@ -157,7 +155,7 @@ function hashSwapRequest(message, toBlockchain) {
 
 function signSwapRequest(message, toBlockchain) {
     if (toBlockchain == "Harmony") {
-        let signerMessage = signer.signMessageForHarmony(message);
+        let signerMessage = signer.signMessageForHarmony(message, procoss.env.HARMONY_KEY);
         return signerMessage;
     } else {
         throw "Receive unknown blockchain";

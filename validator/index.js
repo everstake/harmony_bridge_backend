@@ -9,6 +9,14 @@ let chainNames = require("./config/chain_names.json");
 const logger = require('./logger');
 
 console.log("Validator is running");
+console.log('CHAIN_ID: ',      process.env.CHAIN_ID);
+console.log('EDGEWARE_SEED: ', process.env.EDGEWARE_SEED);
+console.log('HARMONY_KEY: ',   process.env.HARMONY_KEY);
+
+if (process.argv.length > 1) {
+    var skip = process.argv[1] === 'skip';
+    console.log('Skip old blocks');
+}
 
 // dbUtils.insertTxData();
 // dbUtils.getTxs();
@@ -20,7 +28,7 @@ console.log("Validator is running");
 
 logger.info.log('info', "Start listening events");
 
-const polkaListener = new PolkaEventListener(true, async (data) => {
+const polkaListener = new PolkaEventListener(skip, async (data) => {
     logger.info.info("Prepare Edgeware data to save and process it");
     console.log(data);
     let dataToSave = {
@@ -35,7 +43,7 @@ const polkaListener = new PolkaEventListener(true, async (data) => {
     await transactionSender.processEvent(chainNames.polka, chainNames.harmony, data, txId);
 });
 polkaListener.listenEvents();
-harmonyListener.listenEvents(true);
+harmonyListener.listenEvents(skip);
 logger.info.log('info', "Start doing more stuff");
 logger.error.log('error', "Start doing more stuff");
 // utils.interactWithContract();
