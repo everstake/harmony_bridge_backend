@@ -77,6 +77,45 @@ describe('Worker', function() {
             catch (err) {
             }
         });
+
+        it('should set status to \'collected\' if threshold is reached but somehow didn`t updated immediately', async function() {
+            let db = new Db();
+            db.insertRequest({
+                'chain_id': 0,
+                'chain_type': 0,
+                'address_to': '0xqwe',
+                'address_from': '0xasd',
+                'tx_time': 1234567890,
+                'amount': 9999,
+                'asset': 'ass et',
+                'nonce': 0
+            });
+            db.insertRequest({
+                'chain_id': 1,
+                'chain_type': 0,
+                'address_to': '0xqwe',
+                'address_from': '0xasd',
+                'tx_time': 1234567890,
+                'amount': 9999,
+                'asset': 'ass et',
+                'nonce': 0
+            });
+            db.insertHarmonySignature(0, 'test-validator1', 'sig1');
+            db.insertHarmonySignature(0, 'test-validator2', 'sig2');
+            db.insertEdgewareHash(1, 'test-validator1', 'sig1');
+            db.insertEdgewareHash(1, 'test-validator2', 'sig2');
+            db.insertEdgewareHash(1, 'test-validator3', 'sig3');
+
+            assert.strictEqual(db.harmonySignatures.length, 2);
+            assert.strictEqual(db.edgewareHashes.length, 3);
+
+            let worker = new Worker(db);
+            await worker.processCollecting();
+
+            assert.strictEqual(db.requests.length, 2);
+            assert.strictEqual(db.requests[0].status, 'collected');
+            assert.strictEqual(db.requests[1].status, 'collected');
+        });
     });
 
     describe('Harmony', function() {

@@ -9,7 +9,10 @@ function isValidValidator(chainId, validator) {
 }
 
 function isValidSignature(data, signature, validator) {
-    if (data.chain_id === 'harmony') {
+    if (data.chain_id.toLowerCase() === 'harmony') {
+        if (!signature) {
+            return false;
+        }
         console.log('check signature for Harmony');
         const hash = hasher.hashMessageForHarmony({
             chainId: data.chain_type,

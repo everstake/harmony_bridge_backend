@@ -16,7 +16,7 @@ class Worker {
         this.db = db;
         this.harmonyClient = harmony;
         this.edgewareClient = edgeware;
-        this.pollInterval = 5000;
+        this.pollInterval = 10000;
     }
 
     async storeHarmonySignature(swapRequestId, validatorPayload) {
@@ -106,6 +106,34 @@ class Worker {
         return true;
     }
 
+    async processCollecting() {
+        const requests = await this.db.getRequestsByStatus('collecting');
+        if (requests && requests.length > 0) {
+            console.log(`found ${requests.length} swap requests not reached threshold`);
+        }
+        for (var i = 0; i < requests.length; i++) {
+            const request = requests[i];
+            let collected = false;
+            if (request.chain_id === global.gConfig.harmony.chain_id) {
+                const count = await this.db.countHarmonySignatures(request.id);
+                collected = count >= global.gConfig.harmony.signatureThreshold;
+            }
+            else if (request.chain_id === global.gConfig.polka.chain_id) {
+                const count = await this.db.countEdgewareHashes(request.id);
+                collected = count >= global.gConfig.polka.signatureThreshold;
+            }
+            if (collected) {
+                console.log(`collected enough signatures for request ${request.id}`);
+                try {
+                    await this.db.setRequestCollected(request.id);
+                }
+                catch (err) {
+                    console.log(`failed to update request (${request.id}) status to 'collected': ${err.message}`);
+                }
+            }
+        }
+    }
+
     async processCollected() {
         const requests = await this.db.getRequestsByStatus('collected');
         if (requests && requests.length > 0) {
@@ -174,24 +202,33 @@ class Worker {
 
     start() {
         const handler1 = () => {
-            this.processCollected()
+            this.processCollecting()
                 .then(() => { setTimeout(handler1, this.pollInterval); })
                 .catch(err => {
-                    console.log(`error while processing collected signatures: ${err.message}`);
+                    console.log(`error while processing signatures not reached threshold: ${err.message}`);
                     setTimeout(handler1, this.pollInterval);
                 });
         };
         const handler2 = () => {
-            this.processPending()
+            this.processCollected()
                 .then(() => { setTimeout(handler2, this.pollInterval); })
                 .catch(err => {
-                    console.log(`error while processing confirmed swap requests: ${err.message}`);
+                    console.log(`error while processing collected signatures: ${err.message}`);
                     setTimeout(handler2, this.pollInterval);
+                });
+        };
+        const handler3 = () => {
+            this.processPending()
+                .then(() => { setTimeout(handler3, this.pollInterval); })
+                .catch(err => {
+                    console.log(`error while processing confirmed swap requests: ${err.message}`);
+                    setTimeout(handler3, this.pollInterval);
                 });
         };
 
         setTimeout(handler1, this.pollInterval);
         setTimeout(handler2, this.pollInterval);
+        setTimeout(handler3, this.pollInterval);
     }
 
     async dump() {
