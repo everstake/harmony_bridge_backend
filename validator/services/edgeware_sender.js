@@ -20,6 +20,7 @@ class EdgewareSender {
    * @returns hash of success tx or error trace
    */
   sendHarmDataToEdgewareAndGetHashBlock(swapHarmMessage, validator) {
+    swapHarmMessage.amount = BigInt(swapHarmMessage.amount);
     return new Promise(async (resolve, reject) => {
       const tx = await this.bridgeContract.tx.requestSwap(
         0,
@@ -28,29 +29,15 @@ class EdgewareSender {
       );
 
       await tx.signAndSend(validator, ({ status, events }) => {
+        console.log(`Status: ${JSON.stringify(status)}`);
+        console.log(`Events: ${events.length}`);
+        events.forEach(({ event: { section, method } }) => {
+          if (section === "system" && method === "ExtrinsicFailed") {
+            reject(new Error('extrinsic failed'));
+          }
+        });
         if (status.isInBlock) {
           resolve(status.asInBlock.toHex());
-        } else if (status.isInBlock || status.isFinalized) {
-          events
-            // find/filter for failed events
-            .filter(
-              ({ event: { section, method } }) =>
-                section === "system" && method === "ExtrinsicFailed"
-            )
-            // we know that data for system.ExtrinsicFailed is
-            // (DispatchError, DispatchInfo)
-            .forEach(({ data: [error, info] }) => {
-              if (error.isModule) {
-                // for module errors, we have the section indexed, lookup
-                const decoded = api.registry.findMetaError(error.asModule);
-                const { documentation, method, section } = decoded;
-
-                reject(`${section}.${method}: ${documentation.join(" ")}`);
-              } else {
-                // Other, CannotLookup, BadOrigin, no extra info
-                reject(error.toString());
-              }
-            });
         }
       });
     });

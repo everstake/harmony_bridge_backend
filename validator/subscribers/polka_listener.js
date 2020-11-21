@@ -1,10 +1,13 @@
 const { ApiPromise, WsProvider } = require('@polkadot/api');
 const { Struct, Text, u32, u64, u128, GenericAccountId } = require('@polkadot/types');
 const { Mainnet, Beresheet } = require('@edgeware/node-types');
+const HarmonyAddress = require('@harmony-js/crypto');
 
 const logger = require('../logger');
+const transactionSender = require("../services/transaction_sender");
 const dbController = require("../services/db_controller");
 const config = require("../config/polka_conf.json");
+const chainNames = require("../config/chain_names.json");
 
 
 function sleep(ms) {
@@ -45,7 +48,40 @@ class PolkaEventListener {
         this.window = 10;
     }
 
+    async processNotApproved() {
+        const now = Date.now() / 1000;
+        const fiveMinutes = 300;
+        const txs = await dbController.getTransactionByStatusAndTime('Polka', 'Requested', (now - config.swapTimeout).toFixed());
+        if (txs && txs.length !== 0) {
+            console.log(`got ${txs.length} swap requests left not processed`);
+        }
+        for (var i = 0; i < txs.length; i++) {
+            const tx = txs[i];
+            if (tx.tx_time < now - fiveMinutes) {
+                const data = {
+                    receiver: tx.address_to,
+                    sender: tx.address_from,
+                    timestamp: tx.tx_time,
+                    amount: tx.amount,
+                    asset: tx.asset,
+                    transferNonce: tx.uniq_id
+                };
+                await transactionSender.processEvent(chainNames.polka, chainNames.harmony, data, tx.id);
+            }
+        }
+    }
+
     async listenEvents() {
+        const handler = () => {
+            this.processNotApproved()
+                .then(() => { setTimeout(handler, 20000); })
+                .catch(err => {
+                    console.log(`error while processing requests: ${err.message}`);
+                    setTimeout(handler, 20000);
+                });
+        };
+        setTimeout(handler, 20000);
+
         this.api = await ApiPromise.create({ provider: this.wsProvider, ...Beresheet });
 
         if (this.skipOldBlocks) {
@@ -128,12 +164,12 @@ class PolkaEventListener {
         // console.log(typeof bytes);
         const encoded = bytes.subarray(1);
         const stringSize = encoded[0] / 4;
-        const receiver = bin2string(encoded.slice(1, stringSize + 1));
-        //console.log('Event string: ', receiver);
+        const receiver = HarmonyAddress.getAddress(bin2string(encoded.slice(1, stringSize + 1))).basicHex;
+        console.log('got receiver address from Edgeware: ', receiver);
         // Sender
         var nextId = stringSize + 1;
         var nextSize = 32;
-        const sender = toHexString(encoded.slice(nextId, nextId + nextSize));
+        const sender = GenericAccountId.encode(encoded.slice(nextId, nextId + nextSize));
         //console.log('Sender:', sender);
         // Amount
         nextId = nextId + nextSize;
@@ -143,8 +179,8 @@ class PolkaEventListener {
         // Asset
         nextId = nextId + nextSize;
         nextSize = 32;
-        const asset = toHexString(encoded.slice(nextId, nextId + nextSize));
-        //console.log('Asset:', sender);
+        const asset = GenericAccountId.encode(encoded.slice(nextId, nextId + nextSize));
+        //console.log('Asset:', asset);
         // Transfer nonce
         nextId = nextId + nextSize;
         nextSize = 16;

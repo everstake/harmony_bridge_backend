@@ -8,12 +8,13 @@ services:
       - postgres
     environment:
       DATABASE_URL: postgres://user:pass@postgres:5432/db
-      CHAIN_ID: testNet
       NODE_ENV: development
-    command: npm run dev
+    command: npm run dev ${NODE_ARG}
     volumes:
       - .:/app/
       - /app/node_modules
+    extra_hosts:
+      - "localhost:192.168.1.206"
 
   postgres:
     image: postgres:13.0

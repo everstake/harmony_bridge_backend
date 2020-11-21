@@ -14,6 +14,9 @@ module.exports = {
       min: 2,
       max: 10
     },
+    migrations: {
+      directory: './db-migrations'
+    }
   },
 
   prod: {
@@ -28,6 +31,9 @@ module.exports = {
       min: 2,
       max: 10
     },
+    migrations: {
+      directory: './db-migrations'
+    }
   },
 
 };

@@ -1,4 +1,5 @@
 {
   "provider": "wss://beresheet1.edgewa.re",
-  "contractAddress": "5GVy4KCvf1p4hcyk3rEvBHt3oGCcvFFzZez3NVqthkmoFEQq"
+  "contractAddress": "5CPTmqnMrgwJc3LqQfzqDeepHy4WwzDNN3X4LW84FiR3XmCF",
+  "swapTimeout": 86400
 }

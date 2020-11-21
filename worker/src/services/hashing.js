@@ -4,7 +4,7 @@ let web3 = new Web3(global.gConfig.harmony.endpoint);
 
 exports.hashMessageForHarmony = function (message) {
   let abiMessage = web3.eth.abi.encodeParameters(
-    ["uint", "address", "string", "uint", "uint", "address", "uint"],
+    ["uint256", "address", "string", "uint256", "uint256", "address", "uint256"],
     [
       message.chainId,
       message.receiver,
