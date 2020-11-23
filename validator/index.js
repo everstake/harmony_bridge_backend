@@ -10,8 +10,8 @@ console.log('CHAIN_ID: ',      process.env.CHAIN_ID);
 console.log('EDGEWARE_SEED: ', process.env.EDGEWARE_SEED);
 console.log('HARMONY_KEY: ',   process.env.HARMONY_KEY);
 
-if (process.argv.length > 1) {
-    var skip = process.argv[1] === 'skip';
+if (process.argv.length > 2) {
+    var skip = process.argv[2] === 'skip';
     console.log('Skip old blocks');
 }
 
