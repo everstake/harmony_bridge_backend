@@ -29,13 +29,19 @@ class HarmonyClient {
     }
 
     async sendSignatures(data, signatures) {
-        let options = { gasPrice: 10000000000, gasLimit: 2100000 };
+        let options = { gasPrice: 1000000000, gasLimit: 2100000 };
         data.timestamp = parseInt(data.timestamp);
         data.amount = parseInt(data.amount);
         data.transferNonce = parseInt(data.transferNonce);
         console.log(data);
         console.log(signatures);
-        const response = await this.contract.methods.requestSwap(data, signatures).send(options);
+        try {
+            var response = await this.contract.methods.requestSwap(data, signatures).send(options);
+        }
+        catch (err) {
+            console.log(`error from contract call: ${err.message}`);
+            throw err;
+        }
         console.log(response.transaction.receipt);
         console.log(response.transaction);
         console.log(response.transaction.getTxStatus());
@@ -50,7 +56,8 @@ class HarmonyClient {
         if (!response.result) {
             return false;
         }
-        return response.result.status === '0x1' || response.result.status === 1;
+        return !!response.result.blockNumber;
+        //return response.result.status === '0x1' || response.result.status === 1;
     }
 }
 

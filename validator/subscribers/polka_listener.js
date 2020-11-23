@@ -103,7 +103,7 @@ class PolkaEventListener {
                         await this.processEvent(events[j]);
                     }
                     catch (err) {
-                        logger.info.error(`Error while processing Polka event from block ${hash}: err.message`);
+                        logger.info.error(`Error while processing Polka event from block ${hash}: ${err.message}`);
                     }
                 }
             }
@@ -164,7 +164,8 @@ class PolkaEventListener {
         // console.log(typeof bytes);
         const encoded = bytes.subarray(1);
         const stringSize = encoded[0] / 4;
-        const receiver = HarmonyAddress.getAddress(bin2string(encoded.slice(1, stringSize + 1))).basicHex;
+        const receiverString = bin2string(encoded.slice(1, stringSize + 1));
+        const receiver = HarmonyAddress.getAddress(receiverString).basicHex;
         console.log('got receiver address from Edgeware: ', receiver);
         // Sender
         var nextId = stringSize + 1;

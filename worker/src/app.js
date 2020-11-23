@@ -178,7 +178,9 @@ class Worker {
             const request = requests[i];
             var confirmed = false;
             if (request.chain_id === global.gConfig.harmony.chain_id) {
+                console.log(`checking Harmony finalization of tx ${request.transaction_hash}`);
                 confirmed = await this.harmonyClient.isTxConfirmed(request.transaction_hash);
+                console.log(`isConfirmed: ${confirmed}`);
             }
             else if (request.chain_id === global.gConfig.polka.chain_id) {
                 // TODO: check if all blocks are finalized

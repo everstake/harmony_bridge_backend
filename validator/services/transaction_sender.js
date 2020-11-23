@@ -71,6 +71,7 @@ exports.processEvent = async function (
         let changeStatus = await dbController.changeTxStatus(fromBlockchain, transactionId, "Approved");
         logger.info.log("info", `Swap request from ${fromBlockchain} to ${toBlockchain} with ID ${transactionId} was save in DB as "Approved"`);
     } catch (e) {
+        console.log(`error while processing data about transfer from ${fromBlockchain} to ${toBlockchain}: ${e.message}`);
         logger.error.log(
             "error",
             `Error while processing data about transfer from ${fromBlockchain} to ${toBlockchain}: ${e}`
@@ -155,7 +156,7 @@ function hashSwapRequest(message, toBlockchain) {
 
 function signSwapRequest(message, toBlockchain) {
     if (toBlockchain == "Harmony") {
-        let signerMessage = signer.signMessageForHarmony(message, procoss.env.HARMONY_KEY);
+        let signerMessage = signer.signMessageForHarmony(message, process.env.HARMONY_KEY);
         return signerMessage;
     } else {
         throw "Receive unknown blockchain";

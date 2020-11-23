@@ -11,10 +11,10 @@
             "contractAddress": "0x778af4ed0410e6780c7d70fb4c294ad16bd756a4",
             "signatureThreshold": 3,
             "validators": [
-                "0x778af4ed0410e6780c7d70fb4c294ad16bd756a4",
-                "0xd80a9f53d31a15d75c397d068d4af91d34b876de",
-                "0x36f252725db4c735b4269db0d17085b586093303",
-                "0x825bfaf9294bf83ff0e6cecb5c32aae010209b64"
+                "0xef3f47AA3be82567955FEceBcb2Be2C3beE96735",
+                "0xD80a9f53D31A15d75C397D068d4AF91d34b876dE",
+                "0x36F252725db4C735B4269dB0D17085b586093303",
+                "0x825bFaf9294BF83ff0e6Cecb5C32aAE010209B64"
             ]
         },
         "polka": {
@@ -23,10 +23,10 @@
             "contractAddress": "5GzeieQT3ypJux3ZMd3VjB7rQ33Tu3DJ55SCaEdwvHKbdfx3",
             "signatureThreshold": 3,
             "validators": [
-                "5GKmgzcW8AJbewZXqYK6PqKFW3ehFka3joDdfQpyLetn4dCy",
-                "5EcXNUiywRxGFAAgajvYpd5NWMxwgD2qcz5QvEwaCr1q5prW",
-                "5Ekd74gLipdkoq5kdWS2qcQqQ6Kwis7ZqEfkqAsY7L5po1iw",
-                "5GHeapmkaguAx84vaHcyjvJCj53VsJFQqeWCUpSfHKXCGReT"
+                "5CS19jH25mS5HbsNdNawdnZM7hyiFgKjNAxjV8BQ6e4oDmGs",
+                "5Fpk8LSHq4Cp7kNNamSDfRX8a1kc14gaEn4Ji29TCpn3uzm2",
+                "5F2EykqNx58aWVqf1yY1Dz9ZaL7hAkkUJCuaUcC4cT5VJwXL",
+                "5H9hTQPgSBtED5q8BR9tCTKhx9Yd9dWDGpNGhPUBbgfj11fX"
             ]
         }
     },
