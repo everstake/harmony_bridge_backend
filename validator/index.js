@@ -3,9 +3,6 @@ const PolkaEventListener = require("./subscribers/polka_listener").PolkaEventLis
 const transactionSender = require("./services/transaction_sender");
 const dbController = require("./services/db_controller");
 let chainNames = require("./config/chain_names.json");
-// const utils = require("./utils/contract_utils");
-// const dbUtils = require("./utils/db_utils");
-// const hashUtils = require("./utils/hashing");
 const logger = require('./logger');
 
 console.log("Validator is running");
@@ -17,14 +14,6 @@ if (process.argv.length > 1) {
     var skip = process.argv[1] === 'skip';
     console.log('Skip old blocks');
 }
-
-// dbUtils.insertTxData();
-// dbUtils.getTxs();
-// dbUtils.getStatuses();
-
-// utils.convertAddress();
-// utils.accountAddress();
-// utils.transferMoney();
 
 logger.info.log('info', "Start listening events");
 
@@ -46,9 +35,3 @@ polkaListener.listenEvents();
 harmonyListener.listenEvents(skip);
 logger.info.log('info', "Start doing more stuff");
 logger.error.log('error', "Start doing more stuff");
-// utils.interactWithContract();
-// utils.getData();
-// utils.deployContract();
-
-// utils.deployTestContract();
-// utils.interactTestContract();

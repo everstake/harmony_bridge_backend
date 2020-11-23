@@ -93,24 +93,3 @@ exports.listenEvents = async function (skipOldBlocks) {
     console.log(`Error while listening Harmony Transfer events: ${e}`);
   }
 };
-
-exports.listenTestEvents = function () {
-  const hmy = new Harmony(config.provider, {
-    chainType: ChainType.Harmony,
-    chainId: ChainID.HmyTestnet,
-  });
-
-  const testContract = require("../config/test_contract.json");
-
-  const contractO = hmy.contracts.createContract(
-    testContract.abi,
-    "0xb4411095609bcb50512592c88095f137311a1883"
-  );
-  contractO.events
-    .TestEvent()
-    .on("data", (event) => {
-      console.log("Here is the TestEvent event data:");
-      console.log(event);
-    })
-    .on("error", console.error);
-};

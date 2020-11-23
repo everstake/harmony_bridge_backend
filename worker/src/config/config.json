@@ -7,26 +7,26 @@
         },
         "harmony": {
             "chain_id": 0,
-            "endpoint": "https://api.s0.b.hmny.io/",
-            "contractAddress": "0x595888dee7bdf3949e77fb14749685fc373929f2",
+            "endpoint": "https://api.s0.b.hmny.io",
+            "contractAddress": "0x778af4ed0410e6780c7d70fb4c294ad16bd756a4",
             "signatureThreshold": 3,
             "validators": [
-                "0x2f0B313328f8fb86C4DE3a75B172068b8F23f81A",
-                "0xD40A1b6E35A8DdDF578Ec73386A5BE5b7828e109",
-                "0x1Fa867a7f73B184e5970A8047aaBe0169b4B8B11",
-                "0xaEC412653A5D1f2B40169938C9321aAF52E2eddD"
+                "0x778af4ed0410e6780c7d70fb4c294ad16bd756a4",
+                "0xd80a9f53d31a15d75c397d068d4af91d34b876de",
+                "0x36f252725db4c735b4269db0d17085b586093303",
+                "0x825bfaf9294bf83ff0e6cecb5c32aae010209b64"
             ]
         },
         "polka": {
             "chain_id": 1,
             "endpoint": "wss://beresheet1.edgewa.re",
-            "contractAddress": "5G9JYWGhA62tidAkhmVJg3k34xtK3N8sFaD9fTxRWWukXZn9",
+            "contractAddress": "5GzeieQT3ypJux3ZMd3VjB7rQ33Tu3DJ55SCaEdwvHKbdfx3",
             "signatureThreshold": 3,
             "validators": [
-                "5DDQBBNpHua6G63L3Qhstc2g1Fepb4VQ9zW8CerS575cz49a",
-                "5GGtow9TcLH6tajoMFgWxSMqEzFCsfuMHVYsrtjJQ9dz8Eus",
-                "5DEyKzUBU6b69RqR2UzVo1Qn3PXdKUbYZaRahKC1KKE1R71J",
-                "5GEqiDW2hk3CdddNhnaA1E1GKR5Y2wtZ7shvJkpaBij1T43r"
+                "5GKmgzcW8AJbewZXqYK6PqKFW3ehFka3joDdfQpyLetn4dCy",
+                "5EcXNUiywRxGFAAgajvYpd5NWMxwgD2qcz5QvEwaCr1q5prW",
+                "5Ekd74gLipdkoq5kdWS2qcQqQ6Kwis7ZqEfkqAsY7L5po1iw",
+                "5GHeapmkaguAx84vaHcyjvJCj53VsJFQqeWCUpSfHKXCGReT"
             ]
         }
     },

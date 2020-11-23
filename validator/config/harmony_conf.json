@@ -1,5 +1,5 @@
 {
     "provider": "wss://ws.s0.b.hmny.io",
-    "contractAddress": "0x71a7dc0cd73ec0cc16029f9991c8e336c0dda72c",
+    "contractAddress": "0x778af4ed0410e6780c7d70fb4c294ad16bd756a4",
     "swapTimeout": 86400
 }
