@@ -1,4 +1,5 @@
 const keccak256 = require("keccak256");
+const BigNumber = require('big-number');
 
 const harmonyProvider = require("../config/harmony_conf.json").provider;
 
@@ -13,7 +14,7 @@ exports.hashMessageForHarmony = function (message) {
       message.receiver,
       message.sender,
       message.timestamp,
-      message.amount,
+      new BigNumber(message.amount),
       message.asset,
       message.transferNonce,
     ]

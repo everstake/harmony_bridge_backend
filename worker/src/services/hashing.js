@@ -1,5 +1,6 @@
 const keccak256 = require("keccak256");
 const Web3 = require("web3");
+const BigNumber = require('big-number');
 let web3 = new Web3(global.gConfig.harmony.endpoint);
 
 exports.hashMessageForHarmony = function (message) {
@@ -10,7 +11,7 @@ exports.hashMessageForHarmony = function (message) {
       message.receiver,
       message.sender,
       message.timestamp,
-      message.amount,
+      new BigNumber(message.amount),
       message.asset,
       message.transferNonce,
     ]

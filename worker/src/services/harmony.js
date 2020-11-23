@@ -3,6 +3,7 @@ const { ContractFactory } = require('@harmony-js/contract');
 const { Wallet } = require('@harmony-js/account');
 const { Messenger, WSProvider, HttpProvider } = require('@harmony-js/network');
 const { ChainID, ChainType, hexToNumber } = require('@harmony-js/utils');
+const BigNumber = require('big-number');
 
 
 class HarmonyClient {
@@ -31,7 +32,7 @@ class HarmonyClient {
     async sendSignatures(data, signatures) {
         let options = { gasPrice: 1000000000, gasLimit: 2100000 };
         data.timestamp = parseInt(data.timestamp);
-        data.amount = parseInt(data.amount);
+        data.amount = new BigNumber(data.amount).toString();
         data.transferNonce = parseInt(data.transferNonce);
         console.log(data);
         console.log(signatures);
