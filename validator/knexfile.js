@@ -1,11 +1,12 @@
 // Update with your config settings.
+let dotenv = require('dotenv');
 
 module.exports = {
 
   development: {
     client: 'postgresql',
     connection: {
-      host: 'postgres',
+      host: process.env.DB_HOST,
       database: 'db',
       user:     'user',
       password: 'pass'

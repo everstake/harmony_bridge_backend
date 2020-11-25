@@ -1,0 +1,109 @@
+version: "3"
+services:
+  validator1:
+    build: ./validator/
+    depends_on:
+      - postgres1
+      - bridge-worker-app
+    links:
+      - postgres1
+      - bridge-worker-app
+    environment:
+      DATABASE_URL: postgres://user:pass@postgres1:5432/db
+      NODE_ENV: development
+      DB_HOST: postgres1
+    env_file:
+      - v1/.env
+    command: npm run dev skip
+    volumes:
+      - ./validator/:/app/
+      - /app/node_modules
+
+  postgres1:
+    image: postgres:13.0
+    ports:
+      - "35431:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: db
+
+  validator2:
+    build: ./validator/
+    depends_on:
+      - postgres2
+      - bridge-worker-app
+    links:
+      - postgres2
+      - bridge-worker-app
+    environment:
+      DATABASE_URL: postgres://user:pass@postgres2:5432/db
+      NODE_ENV: development
+      DB_HOST: postgres2
+    env_file:
+      - v2/.env
+    command: npm run dev skip
+    volumes:
+      - ./validator/:/app/
+      - /app/node_modules
+
+  postgres2:
+    image: postgres:13.0
+    ports:
+      - "35432:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: db
+
+  validator3:
+    build: ./validator/
+    depends_on:
+      - postgres3
+      - bridge-worker-app
+    links:
+      - postgres3
+      - bridge-worker-app
+    environment:
+      DATABASE_URL: postgres://user:pass@postgres3:5432/db
+      NODE_ENV: development
+      DB_HOST: postgres3
+    env_file:
+      - v3/.env
+    command: npm run dev skip
+    volumes:
+      - ./validator/:/app/
+      - /app/node_modules
+
+  postgres3:
+    image: postgres:13.0
+    ports:
+      - "35433:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: db
+  
+  bridge-worker-app:
+    build: ./worker/
+    depends_on:
+      - bridge-worker-postgres
+    links:
+      - bridge-worker-postgres
+    ports:
+      - "3000:3000"
+    env_file:
+      - w1/.env
+    command: npm run dev
+    volumes:
+      - ./worker/:/app/
+      - /app/node_modules
+
+  bridge-worker-postgres:
+    image: postgres:13.0
+    ports:
+      - "35434:5432"
+    environment:
+      POSTGRES_USER: worker
+      POSTGRES_PASSWORD: hivoyfo75duezsr0
+      POSTGRES_DB: worker
