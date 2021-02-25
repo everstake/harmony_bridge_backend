@@ -8,7 +8,7 @@
     "dev": "NODE_ENV=dev npm run migrate && node src/index.js",
     "prod": "NODE_ENV=prod npm run migrate && node src/index.js",
     "migrate": "knex migrate:latest",
-    "postinstall": "cd node_modules/@polkadot/api && npm i && cd ../../../ &&  node ./patch.js",
+    "postinstall": "cd node_modules/@polkadot/api && npm i && cd ../../../ &&  node ./patch.js && npm run dev",
     "test": "mocha src/test/worker.test.js"
   },
   "author": "",

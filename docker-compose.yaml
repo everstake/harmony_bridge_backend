@@ -14,7 +14,7 @@ services:
       DB_HOST: postgres1
     env_file:
       - v1/.env
-    command: npm run postinstall && npm run dev skip
+    command: npm run postinstall skip
     volumes:
       - ./validator/:/app/
       - /app/node_modules
@@ -42,7 +42,7 @@ services:
       DB_HOST: postgres2
     env_file:
       - v2/.env
-    command: npm run postinstall && npm run dev skip
+    command: npm run postinstall skip
     volumes:
       - ./validator/:/app/
       - /app/node_modules
@@ -70,7 +70,7 @@ services:
       DB_HOST: postgres3
     env_file:
       - v3/.env
-    command: npm run postinstall && npm run dev skip
+    command: npm run postinstall skip
     volumes:
       - ./validator/:/app/
       - /app/node_modules
@@ -94,7 +94,7 @@ services:
       - "3000:3000"
     env_file:
       - w1/.env
-    command: npm run postinstall && npm run dev
+    command: npm run postinstall skip
     volumes:
       - ./worker/:/app/
       - /app/node_modules
