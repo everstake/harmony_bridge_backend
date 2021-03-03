@@ -21,6 +21,7 @@ class EdgewareSender {
    */
   sendHarmDataToEdgewareAndGetHashBlock(swapHarmMessage, validator) {
     swapHarmMessage.amount = BigInt(swapHarmMessage.amount);
+    swapHarmMessage.chain_id = 0;
     return new Promise(async (resolve, reject) => {
       const tx = await this.bridgeContract.tx.requestSwap(
         0,

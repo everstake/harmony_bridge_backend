@@ -76,7 +76,6 @@ describe("Bridge", function () {
       edgewareSender
         .sendHarmDataToEdgewareAndGetHashBlock(swapMessage, keyring.addFromUri("//Bob"))
         .then((hash) => {
-          console.log("hash of block :>> ", hash);
           assert.isString(hash, 'its not string');
         });
 

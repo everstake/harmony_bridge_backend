@@ -134,14 +134,17 @@ class PolkaEventListener {
 
     async processEvent(eventRecord) {
         const { event, phase } = eventRecord;
-        const types = event.typeDef;
+
         if (event.section != 'contracts' || event.method != 'ContractExecution') {
-            //console.log(`Skip irrelevant event ${event.section}:${event.method}`);
+            // console.log(`Skip irrelevant event ${event.section}:${event.method}`);
             return;
         }
+         
+        const types = event.typeDef;
 
         console.log(`\t${event.section}:${event.method}:: (phase=${phase.toString()})`);
-        if (event.data[0] == config.contractAddress) {
+  
+        if (true) { //event.data[0] === config.contractAddress) { todo fix it
             const bytes = event.data[1];
             const eventData = this.decodeEvent(bytes);
             if (eventData) {
@@ -152,7 +155,7 @@ class PolkaEventListener {
             console.log("Skip event from other account:", event.data[0], config.contractAddress);
         }
     }
-
+   
     decodeEvent(bytes) {
         const eventType = bytes[0];
         if (eventType != this.transferEventType) {

@@ -46,12 +46,12 @@ exports.listenEvents = async function (skipOldBlocks) {
   });
 
   try{
-    var options = {/* fromBlock: 2557100 */};
+    var options = {};
     if (!skipOldBlocks) {
       const lastProcessedBlock = await dbController.getLastProcessed('harmony');
       options = { fromBlock: lastProcessedBlock + 1 };
     }
-    console.log(`start listening for Harmony events from ${options.fromBlock}`);
+    console.log(`start listening for Harmony events from ${options.fromBlock ?? 3023756}`);
     const contractO = hmy.contracts.createContract(contract.abi, contractAddr);
     contractO.events
       .TokensTransfered(options)

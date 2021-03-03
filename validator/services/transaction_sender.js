@@ -96,7 +96,8 @@ exports.processSwapToEdgeware = async function (eventData, transactionId) {
     if (isZeroAsset) {
         eventData.asset = '';
     }
-    eventData.asset = assets['Harmony-Polka'][eventData.asset];
+    eventData.asset = assets['Harmony-Polka'][eventData.asset.toLowerCase()];
+    
 
     if (!edg_sender) {
         throw new Error('sender not initialized');
