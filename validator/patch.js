@@ -41,11 +41,15 @@ try {
         const ndxFile = dataContract.replace(goalString, newCode);
         fs.writeFile(pathContract, ndxFile, (err) => {
             // throws an error, you could also catch it here
-            if (err) throw err;
+            if (err) {
+                console.log("🚀 ~ file: patch.js ~ line 45 ~ fs.writeFile ~ err", err)
+                //throw err;
+            }
 
             try {
                 const dataNew = fs.readFileSync(pathContract, 'utf8');
                 const result4 = dataNew.toString().match(/api.consts.system.blockWeights/g);
+                console.log("🚀 ~ file: patch.js ~ line 52 ~ fs.writeFile ~ result4", result4)
             } catch (err1) {
                 console.log('*******************err1 :', err1);
             }
