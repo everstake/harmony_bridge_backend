@@ -88,6 +88,7 @@ class Worker {
         }
 
         var count = 0;
+       
         if (data.chain_id === global.gConfig.harmony.chain_id) {
             count = await this.storeHarmonySignature(swapRequestId, validatorPayload);
         }
@@ -159,6 +160,7 @@ class Worker {
                     }, signatures.map(sig => {
                         return sig.signature;
                     }));
+                    console.log("🚀 ~ file: app.js ~ line 163 ~ Worker ~ processCollected ~ txHash", txHash)
                     console.log(`execute swap request ${request.address_from} -> ${request.address_to}, value: ${request.amount}, txhash: ${txHash}`);
                 }
                 await this.db.setRequestPending(request.id, txHash);
@@ -187,6 +189,7 @@ class Worker {
                 const hashes = await this.db.getEdgewareHashes(request.id);
                 var numFinalized = 0;
                 for (var j = 0; j < hashes.length; j++) {
+                    console.log('hashes[j].block_hash :>> ', hashes[j].block_hash);
                     if (await this.edgewareClient.isBlockFinalized(hashes[j].block_hash)) {
                         numFinalized++;
                     }

@@ -9,7 +9,7 @@
             "chain_id": 0,
             "endpoint": "https://api.s0.b.hmny.io",
             "contractAddress": "0x778Af4eD0410E6780c7D70fb4c294ad16BD756A4",
-            "signatureThreshold": 2,
+            "signatureThreshold": 3,
             "validators": [
                 "0xef3f47AA3be82567955FEceBcb2Be2C3beE96735",
                 "0xD80a9f53D31A15d75C397D068d4AF91d34b876dE",
@@ -21,7 +21,7 @@
             "chain_id": 1,
             "endpoint": "wss://beresheet1.edgewa.re",
             "contractAddress": "5Es6sA33szHwJtmseSDm29GGSgHiTaWmgavBd7wJhvMFQQda",
-            "signatureThreshold": 2,
+            "signatureThreshold": 3,
             "validators": [
                 "5CS19jH25mS5HbsNdNawdnZM7hyiFgKjNAxjV8BQ6e4oDmGs",
                 "5Fpk8LSHq4Cp7kNNamSDfRX8a1kc14gaEn4Ji29TCpn3uzm2",
