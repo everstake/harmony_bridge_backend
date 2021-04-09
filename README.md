@@ -4,7 +4,8 @@ git submodule init
 git submodule update
 
 ## Run in a cloud server
-nohup docker-compose up —build &   to run in server
+nohup docker-compose up &   //  => to run in server
+tail -f nohup.out
 ## Run on the local pc
 docker-compose up
 ## Shut down the server

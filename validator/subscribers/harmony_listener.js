@@ -86,7 +86,7 @@ exports.listenEvents = async function (skipOldBlocks) {
       })
       .on("error", async (error) => {
         logger.error.log("error", `Error while catch Harmony Transfer events: ${error}`);
-        console.log(`Error while catch Harmony Transfer events: ${error}`);
+        console.log(`Error while catch Harmony Transfer events: ${JSON.stringify(error)}`);
       });
   } catch(e) {
     logger.error.log("error", `Error while listening Harmony Transfer events: ${e}`);
