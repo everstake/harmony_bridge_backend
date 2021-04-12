@@ -52,9 +52,7 @@ exports.listenEvents = async function (skipOldBlocks) {
       options = { fromBlock: lastProcessedBlock + 1 };
     }
     console.log(`start listening for Harmony events from ${options.fromBlock ?? 3023756}`);
-    const contractO = hmy.contracts.createContract(contract.abi, contractAddr);
-    contractO.events
-      .TokensTransfered(options)
+    contractObj.events.TokensTransfered(options)
       .on("data", async (event) => {
         logger.info.log("info", `Catch Transfer event in Harmony blockchain with such a data: ${event}`);
         console.log(`Catch Transfer event in Harmony blockchain with such a data: ${JSON.stringify(event)}`);
