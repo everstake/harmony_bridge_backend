@@ -41,7 +41,7 @@ class PolkaEventListener {
     constructor(skipOldBlocks, handler) {
         this.skipOldBlocks = skipOldBlocks
         this.handler = handler;
-        this.transferEventType = 0;
+        this.transferEventType = 2;
         this.wsProvider = new WsProvider(config.provider);
         this.lastProcessedBlock = 0;
         this.pendingLastProcessedBlock = 0;
@@ -158,6 +158,8 @@ class PolkaEventListener {
    
     decodeEvent(bytes) {
         const eventType = bytes[0];
+        console.log("🚀 ~ file: polka_listener.js ~ line 161 ~ PolkaEventListener ~ decodeEvent ~ bytes", bytes)
+        console.log("🚀 ~ file: polka_listener.js ~ line 161 ~ PolkaEventListener ~ decodeEvent ~ eventType", eventType)
         if (eventType != this.transferEventType) {
             console.log(`Don\`t know how to decode this event: ${eventType}`);
             return;

@@ -120,6 +120,7 @@ exports.processSwapToEdgeware = async function (eventData, transactionId) {
     }
     console.log(`Tx to Edgeware is in block ${blockhash}`);
     try {
+        console.log('eventData.asset :>> ', eventData.asset);
         await sendToWorker({
             chain_id: 'polka',
             chain_type: eventData.chainId,

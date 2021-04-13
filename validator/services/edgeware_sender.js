@@ -28,6 +28,7 @@ class EdgewareSender {
         -1,
         swapHarmMessage
       );
+      console.log("🚀 ~ file: edgeware_sender.js ~ line 32 ~ EdgewareSender ~ returnnewPromise ~ tx", tx)
 
       await tx.signAndSend(validator, ({ status, events }) => {
         console.log(`Status: ${JSON.stringify(status)}`);
@@ -37,6 +38,7 @@ class EdgewareSender {
             reject(new Error('extrinsic failed'));
           }
         });
+        console.log('@@@@@@@@@@@status.isInBlock :>> ', status.isInBlock);
         if (status.isInBlock) {
           resolve(status.asInBlock.toHex());
         }
