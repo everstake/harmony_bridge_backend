@@ -28,7 +28,6 @@ class EdgewareSender {
         -1,
         swapHarmMessage
       );
-      console.log("🚀 ~ file: edgeware_sender.js ~ line 32 ~ EdgewareSender ~ returnnewPromise ~ tx", tx)
 
       await tx.signAndSend(validator, ({ status, events }) => {
         console.log(`Status: ${JSON.stringify(status)}`);
