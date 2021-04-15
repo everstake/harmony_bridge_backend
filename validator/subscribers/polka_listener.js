@@ -116,7 +116,7 @@ class PolkaEventListener {
         const lastHdr = await this.api.rpc.chain.getHeader();
         if (lastHdr.number <= this.lastProcessedBlock) {
             this.pendingLastProcessedBlock = this.lastProcessedBlock
-            await sleep(5000);
+            await sleep(50000);
             return [];
         }
         //console.log(JSON.stringify(lastHdr));
@@ -124,7 +124,7 @@ class PolkaEventListener {
         const to = Math.min(from + this.window, lastHdr.number);
         this.pendingLastProcessedBlock = to;
         if (to - from < this.window) {
-            await sleep(100);
+            await sleep(10000);
         }
         const fromHash = await this.api.rpc.chain.getBlockHash(from);
         const toHash = await this.api.rpc.chain.getBlockHash(to);
