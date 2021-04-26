@@ -20,7 +20,7 @@
         "polka": {
             "chain_id": 1,
             "endpoint": "wss://beresheet1.edgewa.re",
-            "contractAddress": "5GLYhbcpsM5Fo5P3tH2Zj7AuyLYgNcuT4ZEisj4NHpJu4bDb",
+            "contractAddress": "5CV72dVQpjt5M6nmhdFrpLnXtWqiVWPeBTkB3cbNhTDhgJ9w",
             "signatureThreshold": 3,
             "validators": [
                 "5CS19jH25mS5HbsNdNawdnZM7hyiFgKjNAxjV8BQ6e4oDmGs",
