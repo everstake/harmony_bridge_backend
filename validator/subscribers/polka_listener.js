@@ -74,13 +74,13 @@ class PolkaEventListener {
     async listenEvents() {
         const handler = () => {
             this.processNotApproved()
-                .then(() => { setTimeout(handler, 20000); })
+                .then(() => { setTimeout(handler, 40000); })
                 .catch(err => {
                     console.log(`error while processing requests: ${err.message}`);
-                    setTimeout(handler, 20000);
+                    setTimeout(handler, 40000);
                 });
         };
-        setTimeout(handler, 20000);
+        setTimeout(handler, 40000);
 
         this.api = await ApiPromise.create({ provider: this.wsProvider, ...Beresheet });
 
@@ -174,27 +174,22 @@ class PolkaEventListener {
         var nextId = stringSize + 1;
         var nextSize = 32;
         const sender = GenericAccountId.encode(encoded.slice(nextId, nextId + nextSize));
-        //console.log('Sender:', sender);
         // Amount
         nextId = nextId + nextSize;
         nextSize = 16;
         const amount = byteArrayToNum(encoded.slice(nextId, nextId + nextSize));
-        //console.log('Amount:', amount);
         // Asset
         nextId = nextId + nextSize;
         nextSize = 32;
         const asset = GenericAccountId.encode(encoded.slice(nextId, nextId + nextSize));
-        //console.log('Asset:', asset);
         // Transfer nonce
         nextId = nextId + nextSize;
         nextSize = 16;
         const transferNonce = byteArrayToNum(encoded.slice(nextId, nextId + nextSize));
-        //console.log('Transfer nonce:', transferNonce);
         // Timestamp
         nextId = nextId + nextSize;
         nextSize = 8;
         const timestamp = byteArrayToNum(encoded.slice(nextId, nextId + nextSize));
-        //console.log('Timestampe:', timestamp);
         return {
             receiver: receiver,
             sender: sender,
