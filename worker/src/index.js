@@ -11,15 +11,15 @@ const router = require('./routes');
 const { Worker } = require('./app');
 
 const db = new Db(global.gConfig.postgres.host,
-                  process.env.POSTGRES_USER,
-                  process.env.POSTGRES_PASSWORD,
-                  global.gConfig.postgres.database);
+    process.env.POSTGRES_USER,
+    process.env.POSTGRES_PASSWORD,
+    global.gConfig.postgres.database);
 
 const harmony = new HarmonyClient(global.gConfig.harmony.endpoint,
-                                  process.env.NODE_ENV === 'prod',
-                                  harmonyCountract.abi,
-                                  global.gConfig.harmony.contractAddress,
-                                  process.env.HARMONY_KEY);
+    process.env.NODE_ENV === 'prod',
+    harmonyCountract.abi,
+    global.gConfig.harmony.contractAddress,
+    process.env.HARMONY_KEY);
 const edgeware = new EdgewareClient(global.gConfig.polka.endpoint);
 
 const worker = new Worker(db, harmony, edgeware);
@@ -35,7 +35,7 @@ app.use('/v1/api', router);
 app.get('/health', function (req, res) {
     res.send('OK');
 });
-app.use('*', function(req, res, next) {
+app.use('*', function (req, res, next) {
     res.status(404).send('Sorry cant find that!');
 });
 app.listen(global.gConfig.port, () => {
