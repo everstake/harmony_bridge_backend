@@ -1,5 +1,5 @@
 {
-  "provider": "ws://127.0.0.1",
+  "provider": "ws://127.0.0.1:9944",
   "contractAddress": "5CV72dVQpjt5M6nmhdFrpLnXtWqiVWPeBTkB3cbNhTDhgJ9w",
   "swapTimeout": 86400
 }
