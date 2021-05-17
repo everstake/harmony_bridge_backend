@@ -10,7 +10,7 @@ tail -f nohup.out
 docker-compose up
 ## Shut down the server
 ps x
-
+docker-compose down
 docker volume rm $(docker volume ls -q)
 docker image prune -a
 
