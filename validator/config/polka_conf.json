@@ -1,5 +1,5 @@
 {
-  "provider": "ws://0.0.0.0",
+  "provider": "ws://localhost",
   "contractAddress": "5CV72dVQpjt5M6nmhdFrpLnXtWqiVWPeBTkB3cbNhTDhgJ9w",
   "swapTimeout": 86400
 }

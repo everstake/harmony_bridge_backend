@@ -30,7 +30,7 @@ global.gConfig = {
     },
     "polka": {
         "chain_id": 1,
-        "endpoint": "ws://0.0.0.0",
+        "endpoint": "ws://localhost",
         "contractAddress": "5GVy4KCvf1p4hcyk3rEvBHt3oGCcvFFzZez3NVqthkmoFEQq",
         "signatureThreshold": 2,
         "validators": [ "test-validator1", "test-validator2", "test-validator3" ]
