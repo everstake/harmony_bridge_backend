@@ -19,7 +19,7 @@
         },
         "polka": {
             "chain_id": 1,
-            "endpoint": "ws://localhost",
+            "endpoint": "wss://localhost",
             "contractAddress": "5CV72dVQpjt5M6nmhdFrpLnXtWqiVWPeBTkB3cbNhTDhgJ9w",
             "signatureThreshold": 2,
             "validators": [
