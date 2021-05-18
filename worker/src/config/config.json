@@ -19,7 +19,7 @@
         },
         "polka": {
             "chain_id": 1,
-            "endpoint": "ws://139.59.132.104:80",
+            "endpoint": "wss://beresheet-test.everstake.one",
             "contractAddress": "5CV72dVQpjt5M6nmhdFrpLnXtWqiVWPeBTkB3cbNhTDhgJ9w",
             "signatureThreshold": 2,
             "validators": [

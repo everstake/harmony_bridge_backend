@@ -15,7 +15,7 @@ docker volume rm $(docker volume ls -q)
 docker image prune -a
 
 worker address http://139.59.132.104:3000/
-
+wscat -c "ws://139.59.132.104:80" - check websocket connection
 
 
 

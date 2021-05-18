@@ -1,5 +1,5 @@
 {
-  "provider": "ws://139.59.132.104:80",
+  "provider": "wss://beresheet-test.everstake.one",
   "contractAddress": "5CV72dVQpjt5M6nmhdFrpLnXtWqiVWPeBTkB3cbNhTDhgJ9w",
   "swapTimeout": 86400
 }
