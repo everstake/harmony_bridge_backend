@@ -34,4 +34,4 @@ polkaListener.listenEvents()
 .catch(err => console.log('Validator has error connection to Edgeware node :>> ', err));
 harmonyListener.listenEvents(skip);
 logger.info.log('info', "Start doing more stuff");
-logger.error.log('error', "Start doing more stuff");
+logger.error.log('error', `Start doing more stuff ${JSON.stringify(err)}`);
