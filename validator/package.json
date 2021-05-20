@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "migrate": "knex migrate:latest",
-    "dev": "npm run migrate && npm update && npx cross-env NODE_OPTIONS='--trace-warnings' node index.js",
+    "dev": "npm run migrate && npm update && node index.js --unhandled-rejections=none",
     "devTest": "node index.js",
     "postinstall": "cd node_modules/@polkadot/api && npm i && cd ../../../ &&  node ./patch.js && npm run dev",
     "test-sender": "mocha tests/edgware_sender.test.js"
