@@ -20,11 +20,23 @@ const harmony = new HarmonyClient(global.gConfig.harmony.endpoint,
     harmonyCountract.abi,
     global.gConfig.harmony.contractAddress,
     process.env.HARMONY_KEY);
-const edgeware = new EdgewareClient(global.gConfig.polka.endpoint);
+let edgeware = null;
+try{
+    edgeware = new EdgewareClient(global.gConfig.polka.endpoint);
+} catch (e) {
+    console.log('error new EdgewareClient :>> ', e);
+}
+
 
 const worker = new Worker(db, harmony, edgeware);
 worker.dump();
-worker.start();
+try{
+    console.log('worker starting :>> ');
+    worker.start();
+} catch (err) {
+    console.log('worker.start err :>> ', err);
+}
+
 
 const app = express();
 app.use(cors());
