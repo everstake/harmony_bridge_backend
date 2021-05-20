@@ -16,7 +16,7 @@ class Worker {
         this.db = db;
         this.harmonyClient = harmony;
         this.edgewareClient = edgeware;
-        this.pollInterval = 10000;
+        this.pollInterval = 30000;
     }
 
     async storeHarmonySignature(swapRequestId, validatorPayload) {
