@@ -16,6 +16,10 @@ docker image prune -a
 
 worker address http://139.59.132.104:3000/
 wscat -c "wss://139.59.132.104:9944" - check websocket connection
+sudo lsof -i -P -n | grep 5432
+docker stop $(docker ps -a -q)
+docker rm $(docker ps -a -q)
+
 
 
 
