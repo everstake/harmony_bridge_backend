@@ -3,10 +3,15 @@ const { ApiPromise, WsProvider } = require('@polkadot/api');
 
 class EdgewareClient {
     constructor(endpoint) {
-        this.wsProvider = new WsProvider(endpoint);
-        ApiPromise.create({ provider: this.wsProvider })
-            .then(api => { this.api = api; })
-            .catch(err => { console.log(err.message); });
+        try{
+            this.wsProvider = new WsProvider(endpoint);
+            ApiPromise.create({ provider: this.wsProvider })
+                .then(api => { this.api = api; })
+                .catch(err => { console.log(err.message); });
+        } catch(err) {
+            console.log('Worker has error connection to edgeware :>> ', err);
+        }
+        
     }
 
     async isBlockFinalized(hash) {

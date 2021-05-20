@@ -7,8 +7,7 @@ const logger = require('./logger');
 
 console.log("Validator is running");
 console.log('CHAIN_ID: ',      process.env.CHAIN_ID);
-console.log('EDGEWARE_SEED: ', process.env.EDGEWARE_SEED);
-console.log('HARMONY_KEY: ',   process.env.HARMONY_KEY);
+
 
 if (process.argv.length > 2) {
     var skip = process.argv[2] === 'skip';
@@ -31,7 +30,8 @@ const polkaListener = new PolkaEventListener(skip, async (data) => {
     let txId = await dbController.saveTx(chainNames.polka, dataToSave);
     await transactionSender.processEvent(chainNames.polka, chainNames.harmony, data, txId);
 });
-polkaListener.listenEvents();
+polkaListener.listenEvents()
+.catch(err => console.log('Validator has error connection to Edgeware node :>> ', err));
 harmonyListener.listenEvents(skip);
 logger.info.log('info', "Start doing more stuff");
 logger.error.log('error', "Start doing more stuff");
