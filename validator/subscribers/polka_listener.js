@@ -99,6 +99,7 @@ class PolkaEventListener {
         } catch (err) {
             logger.info.error(`Error from loadNextEvents ${err}`);
             exit = true;
+            await sleep(50000);
             await this.listenEvents();
         }
 
