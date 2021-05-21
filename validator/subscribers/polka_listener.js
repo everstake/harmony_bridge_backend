@@ -108,7 +108,7 @@ class PolkaEventListener {
     async loopProcessEvent(flag) {
         while (!flag) {
             this.loadNextEvents()
-                .then((blockEvents) => {
+                .then(async (blockEvents) => {
                     for (let i = 0; i < blockEvents.length; i++) {
                         const [hash, events] = blockEvents[i];
                         for (let j = 0; j < events.length; j++) {
