@@ -19,7 +19,7 @@ wscat -c "wss://139.59.132.104:9944" - check websocket connection
 sudo lsof -i -P -n | grep 5432
 docker stop $(docker ps -a -q)
 docker rm $(docker ps -a -q)
-
+@polkadot/api": "3.10.2",
 
 
 
