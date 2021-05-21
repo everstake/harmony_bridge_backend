@@ -95,20 +95,25 @@ class PolkaEventListener {
 
         var exit = false;
         while (!exit) {
-            const blockEvents = await this.loadNextEvents();
-            for (let i = 0; i < blockEvents.length; i++) {
-                const [hash, events] = blockEvents[i];
-                for (let j = 0; j < events.length; j++) {
-                    try {
-                        await this.processEvent(events[j]);
-                    }
-                    catch (err) {
-                        logger.info.error(`Error while processing Polka event from block ${hash}: ${err.message}`);
+            let blockEvents = null;
+            try {
+                blockEvents = await this.loadNextEvents();
+                for (let i = 0; i < blockEvents.length; i++) {
+                    const [hash, events] = blockEvents[i];
+                    for (let j = 0; j < events.length; j++) {
+                        try {
+                            await this.processEvent(events[j]);
+                        }
+                        catch (err) {
+                            logger.info.error(`Error while processing Polka event from block ${hash}: ${err.message}`);
+                        }
                     }
                 }
+                this.lastProcessedBlock = this.pendingLastProcessedBlock;
+                await dbController.setLastProcessed('polka', this.lastProcessedBlock);
+            } catch (error) {
+                logger.info.error(`Error from loadNextEvents ${error}`);  
             }
-            this.lastProcessedBlock = this.pendingLastProcessedBlock;
-            await dbController.setLastProcessed('polka', this.lastProcessedBlock);
         }
     }
 
@@ -129,7 +134,11 @@ class PolkaEventListener {
         const fromHash = await this.api.rpc.chain.getBlockHash(from);
         const toHash = await this.api.rpc.chain.getBlockHash(to);
         console.log(`From (${from}): ${fromHash.toHex()}, To (${to}): ${toHash.toHex()}`);
-        return await this.api.query.system.events.range([ fromHash, toHash ]);
+        return new Promise((res, rej) => {
+            const range = this.api.query.system.events.range([ fromHash, toHash ]).catch(console.log);
+            res(range);
+            rej(console.log);
+        })       
     }
 
     async processEvent(eventRecord) {
@@ -139,7 +148,6 @@ class PolkaEventListener {
             // console.log(`Skip irrelevant event ${event.section}:${event.method}`);
             return;
         }
-         
         const types = event.typeDef;
 
         console.log(`\t${event.section}:${event.method}:: (phase=${phase.toString()})`);
