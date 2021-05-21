@@ -107,19 +107,23 @@ class PolkaEventListener {
 
     async loopProcessEvent(flag) {
         while (!flag) {
-            const blockEvents = await this.loadNextEvents();
-            for (let i = 0; i < blockEvents.length; i++) {
-                const [hash, events] = blockEvents[i];
-                for (let j = 0; j < events.length; j++) {
-                    try {
-                        await this.processEvent(events[j]);
-                    } catch (err) {
-                        logger.info.error(`Error while processing Polka event from block ${hash}: ${err.message}`);
+            this.loadNextEvents()
+                .then((blockEvents) => {
+                    for (let i = 0; i < blockEvents.length; i++) {
+                        const [hash, events] = blockEvents[i];
+                        for (let j = 0; j < events.length; j++) {
+                            try {
+                                await this.processEvent(events[j]);
+                            } catch (err) {
+                                logger.info.error(`Error while processing Polka event from block ${hash}: ${err.message}`);
+                            }
+                        }
                     }
-                }
-            }
-            this.lastProcessedBlock = this.pendingLastProcessedBlock;
-            await dbController.setLastProcessed('polka', this.lastProcessedBlock);
+                    this.lastProcessedBlock = this.pendingLastProcessedBlock;
+                    await dbController.setLastProcessed('polka', this.lastProcessedBlock);
+                })
+                .catch(err => console.log('?????err :>> ', err));
+
         }
     }
 
