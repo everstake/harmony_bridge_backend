@@ -31,7 +31,9 @@ const polkaListener = new PolkaEventListener(skip, async (data) => {
     await transactionSender.processEvent(chainNames.polka, chainNames.harmony, data, txId);
 });
 polkaListener.listenEvents()
-.catch(err => console.log('Validator has error connection to Edgeware node :>> ', err));
+.catch(err => {
+    console.log('Validator has error connection to Edgeware node :>> ', err)
+    logger.error.log('error', `Start doing more stuff ${JSON.stringify(err)}`);
+});
 harmonyListener.listenEvents(skip);
 logger.info.log('info', "Start doing more stuff");
-logger.error.log('error', `Start doing more stuff ${JSON.stringify(err)}`);
