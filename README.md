@@ -13,6 +13,8 @@ ps x
 docker-compose down
 docker volume rm $(docker volume ls -q)
 docker image prune -a
+docker stop $(docker ps -a -q)
+docker rm $(docker ps -a -q)
 
 worker address http://139.59.132.104:3000/
 

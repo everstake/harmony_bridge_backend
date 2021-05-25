@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "npm run migrate && node src/index.js",
-    "dev": "NODE_ENV=dev npm run migrate && node src/index.js",
+    "dev": "NODE_ENV=dev npm run migrate && export NODE_OPTIONS=--max-old-space-size=8192 && npx nodemon src/index.js",
     "prod": "NODE_ENV=prod npm run migrate && node src/index.js",
     "migrate": "knex migrate:latest",
     "postinstall": "cd node_modules/@polkadot/api && npm i && cd ../../../ &&  node ./patch.js && npm run dev",

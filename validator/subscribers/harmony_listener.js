@@ -51,7 +51,7 @@ exports.listenEvents = async function (skipOldBlocks) {
       const lastProcessedBlock = await dbController.getLastProcessed('harmony');
       options = { fromBlock: lastProcessedBlock + 1 };
     }
-    console.log(`start listening for Harmony events from ${options.fromBlock ?? 3023756}`);
+    console.log(`start listening for Harmony events from ${options.fromBlock ?? 10057790}`);
     contractObj.events.TokensTransfered(options)
       .on("data", async (event) => {
         logger.info.log("info", `Catch Transfer event in Harmony blockchain with such a data: ${event}`);

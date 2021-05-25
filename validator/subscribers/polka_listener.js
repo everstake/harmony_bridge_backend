@@ -98,20 +98,23 @@ class PolkaEventListener {
             await this.loopProcessEvent(exit);
         } catch (err) {
             logger.info.error(`Error from loadNextEvents ${err}`);
+        } finally {
             exit = true;
-            await sleep(50000);
-            await this.listenEvents();
         }
 
     }
 
     async loopProcessEvent(flag) {
         while (!flag) {
+            await sleep(8000);
             this.loadNextEvents()
                 .then(async (blockEvents) => {
-                    for (let i = 0; i < blockEvents.length; i++) {
+
+                    const lengthBlockEvent = (blockEvents && blockEvents.length) ? blockEvents.length : 0
+                    for (let i = 0; i < lengthBlockEvent; i++) {
                         const [hash, events] = blockEvents[i];
-                        for (let j = 0; j < events.length; j++) {
+                        const lengthEvents = (events && events.length) ? events.length : 0
+                        for (let j = 0; j < lengthEvents; j++) {
                             try {
                                 await this.processEvent(events[j]);
                             } catch (err) {
@@ -122,7 +125,10 @@ class PolkaEventListener {
                     this.lastProcessedBlock = this.pendingLastProcessedBlock;
                     await dbController.setLastProcessed('polka', this.lastProcessedBlock);
                 })
-                .catch(err => console.log('?????err :>> ', err));
+                .catch(err => {
+                    logger.info.error(`Error while processing Polka ${err.message}`);
+
+                });
 
         }
     }
@@ -142,20 +148,16 @@ class PolkaEventListener {
             await sleep(60000);
         }
         const fromHash = await this.api.rpc.chain.getBlockHash(from);
+        const startHdr = await this.api.rpc.chain.getBlockHash(lastHdr.number.unwrap().subn(500));
         const toHash = await this.api.rpc.chain.getBlockHash(to);
         console.log(`From (${from}): ${fromHash.toHex()}, To (${to}): ${toHash.toHex()}`);
-        return new Promise((res, rej) => {
-            const range = this.api.query.system.events.range([fromHash, toHash]).catch(console.log);
-            res(range);
-            rej(console.log);
-        })
+        return await this.api.query.system.events.range([fromHash.toHex(), toHash.toHex()]).catch(console.log);
     }
 
     async processEvent(eventRecord) {
         const { event, phase } = eventRecord;
 
         if (event.section != 'contracts' || event.method != 'ContractExecution') {
-            // console.log(`Skip irrelevant event ${event.section}:${event.method}`);
             return;
         }
         const types = event.typeDef;
@@ -192,27 +194,22 @@ class PolkaEventListener {
         var nextId = stringSize + 1;
         var nextSize = 32;
         const sender = GenericAccountId.encode(encoded.slice(nextId, nextId + nextSize));
-        //console.log('Sender:', sender);
         // Amount
         nextId = nextId + nextSize;
         nextSize = 16;
         const amount = byteArrayToNum(encoded.slice(nextId, nextId + nextSize));
-        //console.log('Amount:', amount);
         // Asset
         nextId = nextId + nextSize;
         nextSize = 32;
         const asset = GenericAccountId.encode(encoded.slice(nextId, nextId + nextSize));
-        //console.log('Asset:', asset);
         // Transfer nonce
         nextId = nextId + nextSize;
         nextSize = 16;
         const transferNonce = byteArrayToNum(encoded.slice(nextId, nextId + nextSize));
-        //console.log('Transfer nonce:', transferNonce);
         // Timestamp
         nextId = nextId + nextSize;
         nextSize = 8;
         const timestamp = byteArrayToNum(encoded.slice(nextId, nextId + nextSize));
-        //console.log('Timestampe:', timestamp);
         return {
             receiver: receiver,
             sender: sender,
