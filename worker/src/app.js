@@ -16,7 +16,7 @@ class Worker {
         this.db = db;
         this.harmonyClient = harmony;
         this.edgewareClient = edgeware;
-        this.pollInterval = 10000;
+        this.pollInterval = 5000;
     }
 
     async storeHarmonySignature(swapRequestId, validatorPayload) {
@@ -114,6 +114,7 @@ class Worker {
         }
         for (var i = 0; i < requests.length; i++) {
             const request = requests[i];
+            console.log("🚀 ~ file: app.js ~ line 117 ~ Worker ~ processCollecting ~ request", request)
             let collected = false;
             if (request.chain_id === global.gConfig.harmony.chain_id) {
                 const count = await this.db.countHarmonySignatures(request.id);
