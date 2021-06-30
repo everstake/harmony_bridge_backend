@@ -1,6 +1,6 @@
 const { ApiPromise, WsProvider } = require('@polkadot/api');
 const { Struct, Text, u32, u64, u128, GenericAccountId } = require('@polkadot/types');
-const { Mainnet, Beresheet } = require('@edgeware/node-types');
+const { Mainnet, Beresheet, spec } = require('@edgeware/node-types');
 const HarmonyAddress = require('@harmony-js/crypto');
 
 const logger = require('../logger');
@@ -82,7 +82,7 @@ class PolkaEventListener {
         };
         setTimeout(handler, 20000);
 
-        this.api = await ApiPromise.create({ provider: this.wsProvider, ...Beresheet });
+        this.api = await ApiPromise.create({ provider: this.wsProvider, ...Beresheet, ...spec });
 
         if (this.skipOldBlocks) {
             const lastHdr = await this.api.rpc.chain.getHeader();

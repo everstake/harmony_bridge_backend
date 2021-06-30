@@ -3,6 +3,7 @@ const axios = require("axios");
 const ethSig = require("../nano-ethereum-signer");
 const util = require("@polkadot/util");
 const { ApiPromise, WsProvider } = require('@polkadot/api');
+const { spec } = require('@edgeware/node-types');
 const { Keyring } = require('@polkadot/keyring');
 const { ContractPromise } = require('@polkadot/api-contract');
 
@@ -20,7 +21,7 @@ const logger = require("../logger");
 
 const wsProvider = new WsProvider(polkaConf.provider);
 let edg_sender = null;
-ApiPromise.create({ provider: wsProvider })
+ApiPromise.create({ provider: wsProvider, ...spec })
     .then(api => {
         edg_sender = new EdgewareSender(new ContractPromise(api, polkaAbi, polkaConf.contractAddress));
         console.log(`Created Edgeware sender: ${edg_sender}`);
