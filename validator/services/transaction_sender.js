@@ -21,7 +21,7 @@ const logger = require("../logger");
 
 const wsProvider = new WsProvider(polkaConf.provider);
 let edg_sender = null;
-ApiPromise.create({ provider: wsProvider, ...spec })
+ApiPromise.create({ provider: wsProvider })
     .then(api => {
         return new ContractPromise(api, polkaAbi, polkaConf.contractAddress)
     })
