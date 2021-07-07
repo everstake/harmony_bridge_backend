@@ -23,10 +23,7 @@ const wsProvider = new WsProvider(polkaConf.provider);
 let edg_sender = null;
 ApiPromise.create({ provider: wsProvider, ...spec})
     .then(api => { 
-        return new ContractPromise(api, polkaAbi, polkaConf.contractAddress)
-    })
-    .then(contract => {
-        edg_sender = new EdgewareSender(contract);
+        edg_sender = new EdgewareSender(new ContractPromise(api, polkaAbi, polkaConf.contractAddress))
         console.log(`Created Edgeware sender: ${edg_sender}`);
     })
     .catch(err => {
