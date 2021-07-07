@@ -21,13 +21,11 @@ const logger = require("../logger");
 
 const wsProvider = new WsProvider(polkaConf.provider);
 let edg_sender = null;
-ApiPromise.create({ provider: wsProvider, ...Beresheet, ...spec})
-    .then(api => {
-        console.log('api :>> ', spec);
+ApiPromise.create({ provider: wsProvider, ...spec})
+    .then(api => { 
         return new ContractPromise(api, polkaAbi, polkaConf.contractAddress)
     })
     .then(contract => {
-    console.log("🚀 ~ file: transaction_sender.js ~ line 29 ~ contract", contract)
         edg_sender = new EdgewareSender(contract);
         console.log(`Created Edgeware sender: ${edg_sender}`);
     })
