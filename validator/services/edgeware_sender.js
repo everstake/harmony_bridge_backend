@@ -65,10 +65,11 @@ class EdgewareSender {
         // if (status.isInBlock) {
         //   resolve(status.asInBlock.toHex());
         // }
-      }
-      );
+     }
+      //);
     });
-  }
+  });
+}
 
   /**
    * Check of Harmony data saved in Bridge by hash of the data
