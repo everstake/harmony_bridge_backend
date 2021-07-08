@@ -30,18 +30,43 @@ class EdgewareSender {
       );
 
       await tx.signAndSend(validator, ({ status, events }) => {
-        console.log(`Status: ${JSON.stringify(status)}`);
-        console.log(`Events: ${events.length}`);
-        events.forEach(({ event: { section, method } }) => {
-          if (section === "system" && method === "ExtrinsicFailed") {
-            reject(new Error('extrinsic failed'));
-          }
-        });
-        console.log('@@@@@@@@@@@status.isInBlock :>> ', status.isInBlock);
-        if (status.isInBlock) {
-          resolve(status.asInBlock.toHex());
-        }
-      });
+        if (status.isInBlock || status.isFinalized) {
+          events
+            // find/filter for failed events
+            .filter(({ event }) =>
+            tx.events.system.ExtrinsicFailed.is(event)
+            )
+            // we know that data for system.ExtrinsicFailed is
+            // (DispatchError, DispatchInfo)
+            .forEach(({ event: { data: [error, info] } }) => {
+              if (error.isModule) {
+                // for module errors, we have the section indexed, lookup
+                const decoded = tx.registry.findMetaError(error.asModule);
+                const { documentation, method, section } = decoded;
+    
+                console.log(`${section}.${method}: ${documentation.join(' ')}`);
+                if (status.isInBlock) {
+                    resolve(status.asInBlock.toHex());
+                  }
+              } else {
+                // Other, CannotLookup, BadOrigin, no extra info
+                console.log(error.toString());
+                reject(new Error('extrinsic failed'));
+              }
+            });
+        // console.log(`Status: ${JSON.stringify(status)}`);
+        // console.log(`Events: ${events.length}`);
+        // events.forEach(({ event: { section, method } }) => {
+        //   if (section === "system" && method === "ExtrinsicFailed") {
+        //     reject(new Error('extrinsic failed'));
+        //   }
+        // });
+        // console.log('@@@@@@@@@@@status.isInBlock :>> ', status.isInBlock);
+        // if (status.isInBlock) {
+        //   resolve(status.asInBlock.toHex());
+        // }
+      }
+      );
     });
   }
 
