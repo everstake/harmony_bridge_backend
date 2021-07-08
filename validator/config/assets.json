@@ -1,10 +1,10 @@
 {
   "Harmony-Polka": {
     "0x2db2898625cdc3585ec6ed228c2523c5708b24bb": "5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM",
-    "": "5FKsKp7bZpVwvLQx4LyuC1njLYMC498zHs4H9pDy8hko6T3j"
+    "": "kmnH6AV7dtWTHFiMiC4yUUriZLu8j6mgwfgctiRvmwjF8ds"
   },
   "Polka-Harmony": {
-    "5FKsKp7bZpVwvLQx4LyuC1njLYMC498zHs4H9pDy8hko6T3j": "0x0000000000000000000000000000000000000000",
+    "kmnH6AV7dtWTHFiMiC4yUUriZLu8j6mgwfgctiRvmwjF8ds": "0x0000000000000000000000000000000000000000",
     "5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM": "0x2Db2898625CDC3585eC6ed228C2523C5708b24Bb"
   }
 }

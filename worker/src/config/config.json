@@ -20,7 +20,7 @@
         "polka": {
             "chain_id": 1,
             "endpoint": "wss://edgeserhii222.ddns.net",
-            "contractAddress": "5C5M12wCAWvM344yMnLoyL485avpQDwaP7N9Z3h7eTH9YJnw",
+            "contractAddress": "hXFxJz5iLJuZzujf9YyknkFTbvXUouMnByZ28BaSXU5gxKo",
             "signatureThreshold": 3,
             "validators": [
                 "5CS19jH25mS5HbsNdNawdnZM7hyiFgKjNAxjV8BQ6e4oDmGs",
