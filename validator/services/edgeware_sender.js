@@ -7,8 +7,9 @@ const polkaTypes = require("@polkadot/types");
  * @class EdgewareSender
  */
 class EdgewareSender {
-  constructor(_bridgeContract) {
+  constructor(_bridgeContract, api) {
     this.bridgeContract = _bridgeContract;
+    this.api = api
   }
 
   /**
@@ -34,14 +35,14 @@ class EdgewareSender {
           events
             // find/filter for failed events
             .filter(({ event }) =>
-            tx.events.system.ExtrinsicFailed.is(event)
+            this.api.events.system.ExtrinsicFailed.is(event)
             )
             // we know that data for system.ExtrinsicFailed is
             // (DispatchError, DispatchInfo)
             .forEach(({ event: { data: [error, info] } }) => {
               if (error.isModule) {
                 // for module errors, we have the section indexed, lookup
-                const decoded = tx.registry.findMetaError(error.asModule);
+                const decoded = this.api.registry.findMetaError(error.asModule);
                 const { documentation, method, section } = decoded;
     
                 console.log(`${section}.${method}: ${documentation.join(' ')}`);
