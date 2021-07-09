@@ -130,7 +130,7 @@ services:
   bridge-worker-postgres:
     image: postgres:13.0
     ports:
-      - "35434:5432"
+      - "35435:5432"
     environment:
       POSTGRES_USER: worker
       POSTGRES_PASSWORD: hivoyfo75duezsr0
