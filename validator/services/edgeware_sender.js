@@ -48,7 +48,7 @@ class EdgewareSender {
                 const errMessage = `${section}.${method}: ${documentation.join(' ')}`;
                 console.log(errMessage);
                 if (method === 'ContractTrapped') {
-                  setTimeout(() => sendHarmDataToEdgewareAndGetHashBlock(swapHarmMessage, validator), 30000);
+                  setTimeout(() => this.sendHarmDataToEdgewareAndGetHashBlock(swapHarmMessage, validator), 30000);
                 }
 
                 if (status.isInBlock) {
