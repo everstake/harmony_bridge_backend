@@ -50,7 +50,7 @@ class EdgewareSender {
                 if (method === 'ContractTrapped') {
                   console.log('swapHarmMessage :>> ', swapHarmMessage);
                   console.log('validator :>> ', validator);
-                  swapHarmMessage.transferNonce = +swapHarmMessage.transferNonce + 1;
+                  swapHarmMessage.transfer_nonce = +swapHarmMessage.transfer_nonce + 1;
                   console.log('swapHarmMessage :>> ', swapHarmMessage);
                   setTimeout(() => this.sendHarmDataToEdgewareAndGetHashBlock(swapHarmMessage, validator), 30000);
                 }
