@@ -47,7 +47,7 @@ class EdgewareSender {
                 const { documentation, method, section } = decoded;
                 const errMessage = `${section}.${method}: ${documentation.join(' ')}`;
                 if (section === "system" && method === "ExtrinsicFailed") {
-                      reject(new Error('extrinsic failed'));
+                      resolve(this.sendHarmDataToEdgewareAndGetHashBlock(swapHarmMessage, validator))
                     }
                 console.log(errMessage);
                 if (section === "system" && method === 'ContractTrapped') {
