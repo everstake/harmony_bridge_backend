@@ -35,7 +35,7 @@ class EdgewareSender {
           events
             // find/filter for failed events
             .filter(({ event }) =>
-            this.api.events.system.ExtrinsicFailed.is(event)
+              this.api.events.system.ExtrinsicFailed.is(event)
             )
             // we know that data for system.ExtrinsicFailed is
             // (DispatchError, DispatchInfo)
@@ -43,34 +43,39 @@ class EdgewareSender {
               if (error.isModule) {
                 // for module errors, we have the section indexed, lookup
                 const decoded = this.api.registry.findMetaError(error.asModule);
+                console.log("🚀 ~ file: edgeware_sender.js ~ line 46 ~ EdgewareSender ~ .forEach ~ decoded", decoded)
                 const { documentation, method, section } = decoded;
-    
-                console.log(`${section}.${method}: ${documentation.join(' ')}`);
+                const errMessage = `${section}.${method}: ${documentation.join(' ')}`;
+                console.log(errMessage);
+                if (method === 'ContractTrapped') {
+                  setTimeout(() => sendHarmDataToEdgewareAndGetHashBlock(swapHarmMessage, validator), 30000);
+                }
+
                 if (status.isInBlock) {
-                    resolve(status.asInBlock.toHex());
-                  }
+                  resolve(status.asInBlock.toHex());
+                }
               } else {
                 // Other, CannotLookup, BadOrigin, no extra info
                 console.log(error.toString());
                 reject(new Error('extrinsic failed'));
               }
             });
-        // console.log(`Status: ${JSON.stringify(status)}`);
-        // console.log(`Events: ${events.length}`);
-        // events.forEach(({ event: { section, method } }) => {
-        //   if (section === "system" && method === "ExtrinsicFailed") {
-        //     reject(new Error('extrinsic failed'));
-        //   }
-        // });
-        // console.log('@@@@@@@@@@@status.isInBlock :>> ', status.isInBlock);
-        // if (status.isInBlock) {
-        //   resolve(status.asInBlock.toHex());
-        // }
-     }
-      //);
+          // console.log(`Status: ${JSON.stringify(status)}`);
+          // console.log(`Events: ${events.length}`);
+          // events.forEach(({ event: { section, method } }) => {
+          //   if (section === "system" && method === "ExtrinsicFailed") {
+          //     reject(new Error('extrinsic failed'));
+          //   }
+          // });
+          // console.log('@@@@@@@@@@@status.isInBlock :>> ', status.isInBlock);
+          // if (status.isInBlock) {
+          //   resolve(status.asInBlock.toHex());
+          // }
+        }
+        //);
+      });
     });
-  });
-}
+  }
 
   /**
    * Check of Harmony data saved in Bridge by hash of the data
