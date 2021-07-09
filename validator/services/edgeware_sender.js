@@ -46,13 +46,12 @@ class EdgewareSender {
                 console.log("🚀 ~ file: edgeware_sender.js ~ line 46 ~ EdgewareSender ~ .forEach ~ decoded", decoded)
                 const { documentation, method, section } = decoded;
                 const errMessage = `${section}.${method}: ${documentation.join(' ')}`;
+                if (section === "system" && method === "ExtrinsicFailed") {
+                      reject(new Error('extrinsic failed'));
+                    }
                 console.log(errMessage);
-                if (method === 'ContractTrapped') {
-                  console.log('swapHarmMessage :>> ', swapHarmMessage);
-                  console.log('validator :>> ', validator);
-                  swapHarmMessage.transfer_nonce = +swapHarmMessage.transfer_nonce + 1;
-                  console.log('swapHarmMessage :>> ', swapHarmMessage);
-                  setTimeout(() => this.sendHarmDataToEdgewareAndGetHashBlock(swapHarmMessage, validator), 30000);
+                if (section === "system" && method === 'ContractTrapped') {
+                  reject(new Error('ContractTrapped'));
                 }
 
                 if (status.isInBlock) {

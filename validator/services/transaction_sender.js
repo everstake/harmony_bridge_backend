@@ -117,6 +117,17 @@ exports.processSwapToEdgeware = async function (eventData, transactionId) {
     }
     catch (err) {
         console.log(`failed to send transaction to Edgeware: ${err.message}`);
+        if(err.message === 'ContractTrapped') {
+            var blockhash = await edg_sender.sendHarmDataToEdgewareAndGetHashBlock({
+                receiver: eventData.receiver,
+                sender: eventData.sender,
+                amount: eventData.amount,
+                asset: eventData.asset,
+                transfer_nonce: eventData.transferNonce,
+                timestamp: eventData.timestamp,
+                chain_id: eventData.chainId
+            }, validatorKeys);
+        }
         return;
     }
     console.log(`Tx to Edgeware is in block ${blockhash}`);
