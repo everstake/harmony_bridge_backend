@@ -21,7 +21,7 @@
             "chain_id": 1,
             "endpoint": "wss://edgeserhii222.ddns.net",
             "contractAddress": "jBbDfVGnsG1ChsPAiM8MsSwx1rJAbsMW7Y9bHyryWz8yiiV",
-            "signatureThreshold": 3,
+            "signatureThreshold": 2,
             "validators": [
                 "5CS19jH25mS5HbsNdNawdnZM7hyiFgKjNAxjV8BQ6e4oDmGs",
                 "5Fpk8LSHq4Cp7kNNamSDfRX8a1kc14gaEn4Ji29TCpn3uzm2",
