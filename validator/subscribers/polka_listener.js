@@ -80,7 +80,7 @@ class PolkaEventListener {
                     setTimeout(handler, 20000);
                 });
         };
-        setTimeout(handler, 20000);
+        setTimeout(handler, 10000);
 
         this.api = await ApiPromise.create({ provider: this.wsProvider, ...Beresheet, ...spec });
 
@@ -106,7 +106,7 @@ class PolkaEventListener {
 
     async loopProcessEvent(flag) {
         while (!flag) {
-            await sleep(8000);
+            await sleep(5000);
             this.loadNextEvents()
                 .then(async (blockEvents) => {
 
@@ -137,7 +137,7 @@ class PolkaEventListener {
         const lastHdr = await this.api.rpc.chain.getHeader();
         if (lastHdr.number <= this.lastProcessedBlock) {
             this.pendingLastProcessedBlock = this.lastProcessedBlock
-            await sleep(50000);
+            await sleep(10000);
             return [];
         }
         //console.log(JSON.stringify(lastHdr));
@@ -145,7 +145,7 @@ class PolkaEventListener {
         const to = Math.min(from + this.window, lastHdr.number);
         this.pendingLastProcessedBlock = to;
         if (to - from < this.window) {
-            await sleep(60000);
+            await sleep(20000);
         }
         const fromHash = await this.api.rpc.chain.getBlockHash(from);
         const startHdr = await this.api.rpc.chain.getBlockHash(lastHdr.number.unwrap().subn(500));

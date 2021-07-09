@@ -88,7 +88,7 @@ class Worker {
         }
 
         var count = 0;
-       
+
         if (data.chain_id === global.gConfig.harmony.chain_id) {
             count = await this.storeHarmonySignature(swapRequestId, validatorPayload);
         }
@@ -242,7 +242,7 @@ class Worker {
         const signatures = await this.db.getAllSignatures();
         console.log(`DB dump ${requests.length} ${signatures.length} :`);
         requests.forEach(req => {
-           console.log('Request:', req);
+            console.log('Request:', req);
         });
         signatures.forEach(sig => {
             console.log('Signature:', sig);
