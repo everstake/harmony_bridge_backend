@@ -84,6 +84,34 @@ services:
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: db
   
+  validator4:
+    build: ./validator/
+    depends_on:
+      - postgres4
+      - bridge-worker-app
+    links:
+      - postgres4
+      - bridge-worker-app
+    environment:
+      DATABASE_URL: postgres://user:pass@postgres4:5432/db
+      NODE_ENV: development
+      DB_HOST: postgres4
+    env_file:
+      - v4/.env
+    command: npm run postinstall skip
+    volumes:
+      - ./validator/:/app/
+      - /app/node_modules
+
+  postgres4:
+    image: postgres:13.0
+    ports:
+      - "35433:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: db
+
   bridge-worker-app:
     build: ./worker/
     depends_on:
