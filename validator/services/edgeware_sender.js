@@ -47,15 +47,16 @@ class EdgewareSender {
                 const { documentation, method, section } = decoded;
                 const errMessage = `${section}.${method}: ${documentation.join(' ')}`;
                 if (section === "system" && method === "ExtrinsicFailed") {
-                      resolve(this.sendHarmDataToEdgewareAndGetHashBlock(swapHarmMessage, validator))
-                    }
-                console.log(errMessage);
-                if (section === "system" && method === 'ContractTrapped') {
-                  reject(new Error('ContractTrapped'));
+                  reject(new Error('extrinsic failed'));
                 }
 
+                if (section === "system" && method === 'ContractTrapped') {
+                  resolve(new Error('ContractTrapped'));
+                }
+                console.log(errMessage);
+
                 if (status.isInBlock) {
-                  resolve(status.asInBlock.toHex());
+                  resolve(this.sendHarmDataToEdgewareAndGetHashBlock(swapHarmMessage, validator));
                 }
               } else {
                 // Other, CannotLookup, BadOrigin, no extra info
