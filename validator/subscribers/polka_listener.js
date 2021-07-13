@@ -165,6 +165,7 @@ class PolkaEventListener {
         console.log(`\t${event.section}:${event.method}:: (phase=${phase.toString()})`);
 
         if (true) { //event.data[0] === config.contractAddress) { todo fix it
+            console.log('event :>> ', event);
             const bytes = event.data[1];
             const eventData = this.decodeEvent(bytes);
             if (eventData) {
@@ -177,7 +178,9 @@ class PolkaEventListener {
     }
 
     decodeEvent(bytes) {
+        console.log("🚀 ~ file: polka_listener.js ~ line 180 ~ PolkaEventListener ~ decodeEvent ~ bytes", bytes)
         const eventType = bytes[0];
+        console.log("🚀 ~ file: polka_listener.js ~ line 181 ~ PolkaEventListener ~ decodeEvent ~ eventType", eventType)
         if (eventType != this.transferEventType) {
             console.log(`Don\`t know how to decode this event: ${eventType}`);
             return;
