@@ -191,7 +191,7 @@ class PolkaEventListener {
         const stringSize = encoded[0] / 4;
         const receiverString = bin2string(encoded.slice(1, stringSize + 1));
         const receiver = HarmonyAddress.getAddress(receiverString).basicHex;
-        console.log('got receiver address from Edgeware: ', receiver);
+        console.log('got receiver address from Edgeware => ', receiver);
         // Sender
         var nextId = stringSize + 1;
         var nextSize = 32;
