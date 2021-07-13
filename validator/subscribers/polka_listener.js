@@ -167,6 +167,7 @@ class PolkaEventListener {
         if (true) { //event.data[0] === config.contractAddress) { todo fix it
             const bytes = event.data[1];
             const eventData = this.decodeEvent(bytes);
+            console.log("🚀 ~ file: polka_listener.js ~ line 170 ~ PolkaEventListener ~ processEvent ~ eventData", eventData)
             if (eventData) {
                 await this.handler(eventData);
             }
@@ -195,22 +196,27 @@ class PolkaEventListener {
         var nextId = stringSize + 1;
         var nextSize = 32;
         const sender = GenericAccountId.encode(encoded.slice(nextId, nextId + nextSize));
+        console.log("🚀 ~ file: polka_listener.js ~ line 199 ~ PolkaEventListener ~ decodeEvent ~ sender", sender)
         // Amount
         nextId = nextId + nextSize;
         nextSize = 16;
         const amount = byteArrayToNum(encoded.slice(nextId, nextId + nextSize));
+        console.log("🚀 ~ file: polka_listener.js ~ line 204 ~ PolkaEventListener ~ decodeEvent ~ amount", amount)
         // Asset
         nextId = nextId + nextSize;
         nextSize = 32;
         const asset = GenericAccountId.encode(encoded.slice(nextId, nextId + nextSize));
+        console.log("🚀 ~ file: polka_listener.js ~ line 209 ~ PolkaEventListener ~ decodeEvent ~ asset", asset)
         // Transfer nonce
         nextId = nextId + nextSize;
         nextSize = 16;
         const transferNonce = byteArrayToNum(encoded.slice(nextId, nextId + nextSize));
+        console.log("🚀 ~ file: polka_listener.js ~ line 214 ~ PolkaEventListener ~ decodeEvent ~ transferNonce", transferNonce)
         // Timestamp
         nextId = nextId + nextSize;
         nextSize = 8;
         const timestamp = byteArrayToNum(encoded.slice(nextId, nextId + nextSize));
+        console.log("🚀 ~ file: polka_listener.js ~ line 219 ~ PolkaEventListener ~ decodeEvent ~ timestamp", timestamp)
         return {
             receiver: receiver,
             sender: sender,
