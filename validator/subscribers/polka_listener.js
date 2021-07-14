@@ -1,8 +1,8 @@
 const { ApiPromise, WsProvider } = require('@polkadot/api');
-const { Struct, Text, u32, u64, u128, GenericAccountId } = require('@polkadot/types');
+// const { Struct, Text, u32, u64, u128, GenericAccountId } = require('@polkadot/types');
 const { Mainnet, Beresheet, spec } = require('@edgeware/node-types');
 const HarmonyAddress = require('@harmony-js/crypto');
-
+const types = require('@polkadot/types');
 const logger = require('../logger');
 const transactionSender = require("../services/transaction_sender");
 const dbController = require("../services/db_controller");
@@ -21,6 +21,13 @@ function bin2string(array) {
     }
     return result;
 }
+
+function convertToAddress(u8Arr) {
+    let registry = new types.TypeRegistry();
+    const gai = new types.GenericAccountId(registry, u8Arr);
+    return gai.toString();
+}
+
 
 function toHexString(byteArray) {
     return Array.from(byteArray, function (byte) {
@@ -195,7 +202,7 @@ class PolkaEventListener {
         // Sender
         var nextId = stringSize + 1;
         var nextSize = 32;
-        const sender = GenericAccountId.encode(encoded.slice(nextId, nextId + nextSize));
+        const sender = convertToAddress(encoded.slice(nextId, nextId + nextSize));
         console.log("🚀 ~ file: polka_listener.js ~ line 199 ~ PolkaEventListener ~ decodeEvent ~ sender", sender)
         // Amount
         nextId = nextId + nextSize;
@@ -205,7 +212,7 @@ class PolkaEventListener {
         // Asset
         nextId = nextId + nextSize;
         nextSize = 32;
-        const asset = GenericAccountId.encode(encoded.slice(nextId, nextId + nextSize));
+        const asset = convertToAddress(encoded.slice(nextId, nextId + nextSize));
         console.log("🚀 ~ file: polka_listener.js ~ line 209 ~ PolkaEventListener ~ decodeEvent ~ asset", asset)
         // Transfer nonce
         nextId = nextId + nextSize;
