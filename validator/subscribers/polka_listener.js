@@ -208,7 +208,6 @@ class PolkaEventListener {
         nextId = nextId + nextSize;
         nextSize = 16;
         const amount = byteArrayToNum(encoded.slice(nextId, nextId + nextSize));
-        console.log("🚀 ~ file: polka_listener.js ~ line 204 ~ PolkaEventListener ~ decodeEvent ~ amount", amount)
         // Asset
         nextId = nextId + nextSize;
         nextSize = 32;
@@ -218,12 +217,10 @@ class PolkaEventListener {
         nextId = nextId + nextSize;
         nextSize = 16;
         const transferNonce = byteArrayToNum(encoded.slice(nextId, nextId + nextSize));
-        console.log("🚀 ~ file: polka_listener.js ~ line 214 ~ PolkaEventListener ~ decodeEvent ~ transferNonce", transferNonce)
         // Timestamp
         nextId = nextId + nextSize;
         nextSize = 8;
         const timestamp = byteArrayToNum(encoded.slice(nextId, nextId + nextSize));
-        console.log("🚀 ~ file: polka_listener.js ~ line 219 ~ PolkaEventListener ~ decodeEvent ~ timestamp", timestamp)
         return {
             receiver: receiver,
             sender: sender,
